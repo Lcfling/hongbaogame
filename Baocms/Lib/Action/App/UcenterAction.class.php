@@ -76,7 +76,7 @@ class UcenterAction extends CommonAction {
             $this->ajaxReturn("数据异常,请检查!");
         }
 
-//开始时间
+        //开始时间
         $begintime=date("Y-m-d H:i:s",mktime(10,0,0,date('m'),date('d'),date('Y')));
         $begintime=strtotime($begintime);
         //结束时间
