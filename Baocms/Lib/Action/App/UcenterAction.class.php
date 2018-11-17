@@ -84,6 +84,7 @@ class UcenterAction extends CommonAction {
         $overtime=strtotime($overtime);
         //当前时间
         $time=time();
+        
         if ( !($time>$begintime && $time<$overtime)){
             $this->ajaxReturn('',"提现时间为10:00--22:00期间!");
         }
