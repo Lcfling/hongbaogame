@@ -81,7 +81,7 @@ class UcenterAction extends CommonAction {
         //结束时间
         $overtime=date("Y-m-d H:i:s",mktime(22,00,0,date('m'),date('d'),date('Y')));
         $overtime=strtotime($overtime);
-        
+
         //当前时间
         $time=time();
         if ( !($time>$begintime && $time<$overtime)){
