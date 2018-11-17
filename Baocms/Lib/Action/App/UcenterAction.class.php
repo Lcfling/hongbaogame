@@ -76,6 +76,19 @@ class UcenterAction extends CommonAction {
             $this->ajaxReturn("数据异常,请检查!");
         }
 
+//开始时间
+        $begintime=date("Y-m-d H:i:s",mktime(10,0,0,date('m'),date('d'),date('Y')));
+        $begintime=strtotime($begintime);
+        //结束时间
+        $overtime=date("Y-m-d H:i:s",mktime(22,00,0,date('m'),date('d'),date('Y')));
+        $overtime=strtotime($overtime);
+        //当前时间
+        $time=time();
+
+        if ( !($time>$begintime && $time<$overtime)){
+            $this->ajaxReturn('',"提现时间为10:00--22:00期间!");
+        }
+
         $users=D('Users');
 
         $user_info=$users->getUserByUid($user_id,true);
