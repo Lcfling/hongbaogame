@@ -442,30 +442,7 @@ class IndexAction extends CommonAction
         $data=Cac()->get('phb_'.$type);
         print_r(unserialize($data));
     }
-    public function str(){
-       $str= $_GET['str'];
-        $str1 = substr($str,-1);
-        $str2=substr($str,1,1);
 
-        $sum=$str1+$str2;
-
-        if ($str1 == $str2){
-            echo "您的点数为:对子";
-            die();
-        }
-        if ( ($str1 == 2 && $str2 ==8) || ($str1 ==8 && $str2 == 2)){
-            echo "您的点数为:二八杠";
-            die();
-        }
-       $sum1= substr($sum,-1);
-        echo "您的点数为:".$sum1;
-        die();
-      switch ($sum1){
-          case 1:
-              echo "牛".$sum;
-      }
-
-    }
     public function getpeople(){
         $count=D('Users')->where('1')->count();
         $this->ajaxReturn($count-10000,'房间人数',1);
