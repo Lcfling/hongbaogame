@@ -24,6 +24,7 @@ class UcenterAction extends CommonAction {
         $data=$this->member;
         $this->ajaxReturn($data,"个人信息");
     }
+
     // todo 我的推荐 （自己邀请的人）
     public function pid(){
 
