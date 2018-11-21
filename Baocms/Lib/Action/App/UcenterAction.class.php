@@ -133,9 +133,9 @@ class UcenterAction extends CommonAction {
             }
 
 
-            if(!($money>=100)){
+            if(!($money>=50)){
                 D('Users')->txopenLock($this->uid);
-                $this->ajaxReturn(null,"提现最少100",0);
+                $this->ajaxReturn(null,"提现最少50",0);
             }
             $users=D("Users");
             $data= $users->txmoney($user_id,$money);
