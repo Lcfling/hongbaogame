@@ -106,7 +106,7 @@ class TestAction extends CommonAction{
 
     //  todo  发包
     public function fabao(){
-
+        echo "111";
     }
 
     public function time(){
