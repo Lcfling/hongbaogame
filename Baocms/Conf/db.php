@@ -1,10 +1,10 @@
 <?php
     return  array(
     'DB_TYPE'   =>  'mysql',
-    'DB_HOST'   =>  '39.98.62.137',
-    'DB_NAME'   =>  'hongbaomysqldb',//数据库名字
-    'DB_USER'   =>  'hongbao',//数据库用户名
-    'DB_PWD'    =>  'sUMOIbC-U0GK',//数据库密码
+    'DB_HOST'   =>  '61.160.195.73',
+    'DB_NAME'   =>  'hongbao',//数据库名字
+    'DB_USER'   =>  'gaofangsql',//数据库用户名
+    'DB_PWD'    =>  'Lcfling2954626',//数据库密码
     'DB_PORT'   =>   3306 ,
     'DB_CHARSET'=>  'utf8',
     'DB_PREFIX' =>  'bao_',

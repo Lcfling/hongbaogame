@@ -20,8 +20,8 @@ class IndexAction extends CommonAction
                 'img'=>'img/game2.png'
             ),
             2=>array(
-                'title'=>'大小单双',
-                'game'=>'danshuang',
+                'title'=>'二八杠',
+                'game'=>'erba',
                 'img'=>'img/game3.png'
             )
         );
@@ -468,5 +468,14 @@ class IndexAction extends CommonAction
 	    $roomid=3735273;
         $baoList=D('Hongbao')->getInfoByTime($roomid,$time);
         print_r($baoList);
+    }
+    public function testbb(){
+        //Cac()->delete('randUserList');
+        $user=D('Users')->where('is_robot=1')->select();
+        print_r($user);
+        foreach ($user as $value){
+            Cac()->delete('userinfo_'.$value['user_id']);
+        }
+        echo 'sss';
     }
 }

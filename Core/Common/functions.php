@@ -371,11 +371,10 @@ function Cac(){
         return $redis;
     }else{
         $redis=new Redis();
-        $redis->connect('47.92.104.149', '6379');
+        $redis->connect('61.160.195.73', '6379');
         $redis->auth('lcf2954626');
         return $redis;
     }
-
 }
 /**
  * 缓存管理

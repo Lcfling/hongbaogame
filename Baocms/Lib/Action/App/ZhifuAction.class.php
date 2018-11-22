@@ -50,7 +50,7 @@ class ZhifuAction extends CommonAction{
         $data['status']='0';
         $order->add($data);
 
-        $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+        $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
         $this->ajaxReturn($re,'充值链接');
 
     }
@@ -84,7 +84,7 @@ class ZhifuAction extends CommonAction{
         $data['status']='0';
         $order->add($data);
 
-        $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+        $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
         $this->ajaxReturn($re,'充值链接');
 
     }

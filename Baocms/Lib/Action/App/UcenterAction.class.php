@@ -407,7 +407,7 @@ class UcenterAction extends CommonAction {
         require_once(APP_PATH.'Lib/phpqrcode/phpqrcode.php');
         $ID=(int)$_GET['uid'];
 
-        $value= $url = "http://reg2.zllmqw.com/xiazai/registerAPP.html?pid=".$ID;					//二维码内容
+        $value= $url = "http://regfw.weiquer.com/xiazai/registerAPP.html?pid=".$ID;					//二维码内容
         $errorCorrectionLevel = 'L';	//容错级别
         $matrixPointSize = 7;//生成图片大小
         header('Content-type: image/png');

@@ -103,7 +103,6 @@ class UsersModel extends CommonModel
         $this->where(array('account'=>$mobile))->save($data);
         Cac()->set('userinfo_'.$userInfo['user_id'],serialize($userInfo));
         Cac()->set('userinfo_mobile_'.$userInfo['account'],serialize($userInfo));
-        $this->addmoney($userInfo['user_id'],500,1,1,"体验金");
         return $userInfo;
     }
 
@@ -439,6 +438,4 @@ class UsersModel extends CommonModel
             return false;
         }
     }
-
-
 }
