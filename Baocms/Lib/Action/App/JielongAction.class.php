@@ -155,9 +155,6 @@ class JielongAction extends CommonAction{
 
     public function Gameover(){
 
-
-
-
         $hongbao=D('Hongbao_jielong');
         $where['is_over']=array('EQ',0);
         $list=$hongbao->order('id desc')->limit(1)->find();
