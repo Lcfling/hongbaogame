@@ -13,6 +13,7 @@ class LoginAction extends CommonAction{
     
     //todo lcfling
     public function login(){
+        
         $userName=(int)$_POST['username'];
         $userPassword=$_POST['password'];
 
