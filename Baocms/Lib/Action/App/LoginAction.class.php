@@ -10,6 +10,7 @@ require_once LIB_PATH.'/GatewayClient/Gateway.php';
 use GatewayClient\Gateway;
 
 class LoginAction extends CommonAction{
+    
     //todo lcfling
     public function login(){
         $userName=(int)$_POST['username'];
