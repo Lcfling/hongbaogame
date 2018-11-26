@@ -121,6 +121,16 @@ class LoginAction extends CommonAction{
 
         echo $code;
     }
+
+    public function getzfcodeview(){
+        $mobile=(int)$_GET['mobile'];
+        if(!isMobile($mobile)){
+            $this->ajaxReturn('','手机号码格式错误！',0);
+        }
+        $code=Cac()->get('zf_code_'.$mobile);
+
+        echo $code;
+    }
     public function get_zhifuview(){
         $mobile=(int)$_GET['mobile'];
         if(!isMobile($mobile)){

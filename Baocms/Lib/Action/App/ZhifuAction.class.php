@@ -22,7 +22,6 @@ class ZhifuAction extends CommonAction{
     }
 
     public function indexs(){
-
         // 用户id
         $user_id=$this->uid;
 
@@ -41,14 +40,21 @@ class ZhifuAction extends CommonAction{
         //商户订单号
         $customer_order_no = $user_id.time().rand(1000,9999);
 
-        $order=M('order');
+        $order=D('Order');
         $data['user_id']=$user_id;
         $data['out_trade_no']=$customer_order_no;
         $data['total_amount']=$money*100;
         $data['subject']='用户充值';
         $data['notify_time']=time();
         $data['status']='0';
-        $order->add($data);
+        $id=$order->add($data);
+        if($id>0){
+            $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+            $this->ajaxReturn($re,'充值',1);
+        }else{
+            $re['url']="http://baidu.com";
+            $this->ajaxReturn($re,'充值故障！',0);
+        }
 
         $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
         $this->ajaxReturn($re,'充值链接');
@@ -56,7 +62,6 @@ class ZhifuAction extends CommonAction{
     }
 
     public function index(){
-
         // 用户id
         $user_id=$this->uid;
 
@@ -75,14 +80,21 @@ class ZhifuAction extends CommonAction{
         //商户订单号
         $customer_order_no = $user_id.time().rand(1000,9999);
 
-        $order=M('order');
+        $order=D('Order');
         $data['user_id']=$user_id;
         $data['out_trade_no']=$customer_order_no;
         $data['total_amount']=$money*100;
         $data['subject']='用户充值';
         $data['notify_time']=time();
         $data['status']='0';
-        $order->add($data);
+        $id=$order->add($data);
+        if($id>0){
+            $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+            $this->ajaxReturn($re,'充值',1);
+        }else{
+            $re['url']="http://baidu.com";
+            $this->ajaxReturn($re,'充值故障！',0);
+        }
 
         $re['url']="http://game1gao.weiquer.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
         $this->ajaxReturn($re,'充值链接');

@@ -279,11 +279,11 @@ class IndexAction extends CommonAction
     }
     public function versionios(){
         $v=$_POST['currentversion'];
-        if($v!="1.2.0"){
-            $data="http://reg.zllmqw.com/xiazai/download.html";
+        if($v!="1.3.1"){
+            $data="http://regfw.weiquer.com/xiazai/download.html";
             $this->ajaxReturn($data,$_POST['currentversion'],"success");
         }else{
-            $data="http://reg.zllmqw.com/xiazai/download.html";
+            $data="http://regfw.weiquer.com/xiazai/download.html";
             $this->ajaxReturn($data,$_POST['currentversion'],"faild");
         }
     }
@@ -435,7 +435,6 @@ class IndexAction extends CommonAction
         $tg_data['remark']="今日推广";
         $tg_data['data']=D()->query($tg_sql);
         Cac()->set('phb_4',serialize($tg_data));
-
     }
     public function getphb(){
         $type=$_GET['type'];
@@ -456,8 +455,8 @@ class IndexAction extends CommonAction
         $v=$_POST['currentversion'];
         $data['force']='1';
         $data['detail']='版本更新信息';
-        $data['url']='http://www.baidu.com';
-        if($v=="3.0.0"){
+        $data['url']='https://myappdownload.oss-cn-beijing.aliyuncs.com/dark.apk';
+        if($v=="3.1.0"){
             $this->ajaxReturn(null,'最新版本',0);
         }else{
             $this->ajaxReturn($data,'版本更新',1);
@@ -477,5 +476,10 @@ class IndexAction extends CommonAction
             Cac()->delete('userinfo_'.$value['user_id']);
         }
         echo 'sss';
+    }
+    public function clearoom(){
+	    Cac()->delete('roomlist_saolei');
+	    Cac()->delete('room_3735274','room_3735273');
+	    echo "success";
     }
 }

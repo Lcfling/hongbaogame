@@ -144,7 +144,6 @@ class JielongAction extends CommonAction{
                 $this->ajaxReturn('','领取成功!',1);
             }
         }else{
-
             $this->ajaxReturn('','手慢了，领取完了!',0);
         }
     }
@@ -308,7 +307,7 @@ class JielongAction extends CommonAction{
             $roominfo=D('Room')->getroom($roomid);
             $money=$roominfo['conf_min'];
             $bom_num=rand_string(1,1);
-            $hongbao_info=D('Jielong')->createhongbao($money,$bom_num,7,$roomid,$user['id']);
+            $hongbao_info=D('Jielong')->createhongbao($money,$bom_num,5,$roomid,$user['id']);
             if($hongbao_info){
                 D('Users')->reducemoney($user['id'],$money,4,0,'发送红包');
                 //通知
@@ -388,7 +387,7 @@ class JielongAction extends CommonAction{
         $res['bom_num']=$hongbao_info['bom_num'];
         $res['recive_num']=$kickList['num'];
         $res['check']=$kickList['check'];
-        $res['nums']=7;
+        $res['nums']=5;
         $res['list']=$kickList['list'];
         foreach ($res['list'] as &$v){
             $v['recivetime']=date('H:i:s',$v['recivetime']);

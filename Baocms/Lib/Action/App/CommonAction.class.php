@@ -64,6 +64,9 @@ class CommonAction extends BaseAction {
         if(MODULE_NAME=='Hongbao'&&ACTION_NAME=='aotudosend'){
             return;
         }
+        if(MODULE_NAME=='Hongbao'&&ACTION_NAME=='maotudosend'){
+            return;
+        }
         if(MODULE_NAME=='Verify'){
             return;
         }
@@ -76,7 +79,7 @@ class CommonAction extends BaseAction {
         if(MODULE_NAME=='Ucenter'&&ACTION_NAME=='haibao'){
             return;
         }
-
+        
         if(MODULE_NAME=='Game'&&(ACTION_NAME=='balance'||ACTION_NAME=='createresult'||ACTION_NAME=='isgoon')){
             return;
         }
@@ -112,5 +115,11 @@ class CommonAction extends BaseAction {
         Image::buildImageVerify(4,2,'png',60,30);
     }
 
+
+    public function writeLog($text) {
+
+        file_put_contents ( "./syslog.txt", date ( "Y-m-d H:i:s" ) . "  " . $text . "\r\n", FILE_APPEND );
+
+    }
 
 }

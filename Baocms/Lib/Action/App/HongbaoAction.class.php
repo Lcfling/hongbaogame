@@ -385,7 +385,7 @@ class HongbaoAction extends CommonAction
         //获取随机用户
 
         //获取房间列表
-        /*$roomlist=D('Room')->getroomlist('saolei');
+        $roomlist=D('Room')->getroomlist('saolei');
         foreach ($roomlist as $roomdata){
             //查看一分钟内是否有当前房间内发送的红包
             $roomid=$roomdata['room_id'];
@@ -396,15 +396,15 @@ class HongbaoAction extends CommonAction
             $ranstatus=rand_string(6,1);
             $ransfabao=rand_string(6,1);
             if($ranstatus>700000){
-                $money=$money+500;
-            }elseif($ranstatus<300000){
                 $money=$money+1000;
+            }elseif($ranstatus<300000){
+                $money=$money+4000;
             }
-            if($money>3000){
+            /*if($money>3000){
                 if($ransfabao>200000){
                     continue;
                 }
-            }
+            }*/
             $bom_num=rand_string(1,1);
             $hongbao_info=D('Hongbao')->createhongbao($money,$bom_num,7,$roomid,$user['user_id']);
             if($hongbao_info){
@@ -413,7 +413,45 @@ class HongbaoAction extends CommonAction
                 $this->sendnotify($hongbao_info,$user,$hongbao_info['roomid']);
                 continue;
             }
-        }*/
+        }
+
+    }
+
+    //刷包  不发通知
+    public function maotudosend(){
+        //获取随机用户
+
+        //获取房间列表
+        $roomlist=D('Room')->getroomlist('saolei');
+        foreach ($roomlist as $roomdata){
+            //查看一分钟内是否有当前房间内发送的红包
+            $roomid=$roomdata['room_id'];
+            //获取随机用户
+            $user=D('Users')->getrandUser();
+            $roominfo=D('Room')->getroom($roomid);
+            $money=$roominfo['conf_min'];
+            $ranstatus=rand_string(6,1);
+            $ransfabao=rand_string(6,1);
+            if($ranstatus>700000){
+                $money=$money+1000;
+            }elseif($ranstatus<300000){
+                $money=$money+4000;
+            }
+            $money=50000;
+            /*if($money>3000){
+                if($ransfabao>200000){
+                    continue;
+                }
+            }*/
+            $bom_num=rand_string(1,1);
+            $hongbao_info=D('Hongbao')->createhongbao($money,$bom_num,7,$roomid,$user['user_id']);
+            if($hongbao_info){
+                D('Users')->reducemoney($user['id'],$money,4,0,'发送红包');
+                //通知
+                //$this->sendnotify($hongbao_info,$user,$hongbao_info['roomid']);
+                continue;
+            }
+        }
     }
 
     //机器人自动清包
@@ -422,9 +460,9 @@ class HongbaoAction extends CommonAction
         foreach ($roomlist as $roomdata){
             $roomid=$roomdata['room_id'];
             //拿出来发包时间在某一个时间段的信息
-            $time=5;
+            $time=15;
             //最多抢包次数
-            $qnums='1';
+            $qnums='6';
             $baoList=D('Hongbao')->getInfoByTime($roomid);
             //print_r($baoList);
             foreach ($baoList as $hongbao_info){
@@ -433,7 +471,6 @@ class HongbaoAction extends CommonAction
 
                     //echo
                     if($hongbao_info['money']<=5000){
-                        echo "-------------------------------- \n";
                         $hongbao_id=$hongbao_info['id'];//红包id
                         Cac()->rPush("robot_rob_h".$hongbao_id,1);
                         if(Cac()->lLen("robot_rob_h".$hongbao_id)>$qnums){
@@ -442,11 +479,9 @@ class HongbaoAction extends CommonAction
 
                         $user=D('Users')->getrandUser();
 
-                        echo "用户信息=".$user['nickname']." s\n";
 
                         $hongbaoModel=D('Hongbao');
                         if(empty($hongbao_info)){
-                            echo "红包信心为空 \n";
                             continue;
                         }
                         $bom_num=$hongbao_info['bom_num'];
@@ -454,19 +489,15 @@ class HongbaoAction extends CommonAction
 
                         //此处加强判断 已经领取  不允许重复领取
                         if($hongbaoModel->is_recivedQ($hongbao_id,$user['user_id'])){
-                            echo "红包重复领取 \n";
                             continue;
                         }
                         $kickback_id=$hongbaoModel->getOnekickid($hongbao_id);
                         $kickback_info=$hongbaoModel->getkickInfo($kickback_id);
 
-                        if(substr((int)$kickback_info['money'],-1)==$bom_num){
+                        /*if(substr((int)$kickback_info['money'],-1)==$bom_num){
                             Cac()->rPush('kickback_queue_'.$hongbao_info['id'],$kickback_id);
-                            echo "红包避雷 \n";
-                            echo "红包id=".$hongbao_id." 小红包id=".$kickback_id;
                             continue;
-                        }
-                        echo "结束点222222 \n";
+                        }*/
                         if($kickback_id>0){
                             //先把自己入队到已经领取
                             $hongbaoModel->UserQueue($hongbao_id,$user['user_id']);
@@ -475,8 +506,6 @@ class HongbaoAction extends CommonAction
 
                             $money=$kickback_info['money'];
                             D('Users')->addmoney($user['user_id'],$money,2,0,"机器领包");
-
-                            echo "这里在走赔付信息 \n \n \n";
 
 
                             //领取通知

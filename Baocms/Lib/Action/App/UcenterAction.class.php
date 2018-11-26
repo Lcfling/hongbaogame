@@ -71,11 +71,9 @@ class UcenterAction extends CommonAction {
         $user_id=$this->uid;
         $money=(int)$_POST['money']; //提现金额
         $zfb_pwd=(int)$_POST['zfb_pwd'];
-
         if ($money == "" || $zfb_pwd == ""){
             $this->ajaxReturn("数据异常,请检查!");
         }
-
         //开始时间
         $begintime=date("Y-m-d H:i:s",mktime(10,0,0,date('m'),date('d'),date('Y')));
         $begintime=strtotime($begintime);
@@ -88,10 +86,12 @@ class UcenterAction extends CommonAction {
         if ( !($time>$begintime && $time<$overtime)){
             $this->ajaxReturn('',"提现时间为10:00--22:00期间!");
         }
-
         $users=D('Users');
-
         $user_info=$users->getUserByUid($user_id,true);
+        $this->writeLog(var_export($user_info,true));
+        if ($user_info['zfb_num']==""||$user_info['zfb_num']==NULL||$user_info['name']==NULL){
+            $this->ajaxReturn(null,'请先绑定支付宝',0);
+        }
 
         if ($user_info['zfb_pwd'] !=md5($zfb_pwd)){
             $this->ajaxReturn(null,'支付密码错误!',0);
