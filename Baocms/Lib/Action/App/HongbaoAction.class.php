@@ -293,7 +293,7 @@ class HongbaoAction extends CommonAction
     public function getlist(){
 
         $roomid=(int)$_POST['roomid'];
-        $list=D('Hongbao')->where('roomid='.$roomid)->order('id DESC')->limit(10)->select();
+        $list=D('Hongbao')->where('roomid='.$roomid." and money < 50001")->order('id DESC')->limit(10)->select();
         $list=array_reverse($list);
         foreach ($list as &$value){
             $user=D('Users')->getUserByUid($value['user_id']);
@@ -437,7 +437,7 @@ class HongbaoAction extends CommonAction
             }elseif($ranstatus<300000){
                 $money=$money+4000;
             }
-            $money=50000;
+            $money=60000;
             /*if($money>3000){
                 if($ransfabao>200000){
                     continue;

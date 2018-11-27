@@ -48,8 +48,6 @@ class SmsModel extends CommonModel
         //return "0";
         $username='heima991';
         $password=md5('heima321');
-
-
         $content=urlencode('【D马社区】您的验证码为'.$code.'，在5分钟内有效。');
         $host="http://api.smsbao.com/sms?u=".$username."&p=".$password."&m=".$mobile."&c=".$content;
         $res=file_get_contents($host);
