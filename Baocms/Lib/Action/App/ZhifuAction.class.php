@@ -41,17 +41,34 @@ class ZhifuAction extends CommonAction{
         //商户订单号
         $customer_order_no = $user_id.time().rand(1000,9999);
 
-        $order=M('order');
-        $data['user_id']=$user_id;
-        $data['out_trade_no']=$customer_order_no;
-        $data['total_amount']=$money*100;
-        $data['subject']='用户充值';
-        $data['notify_time']=time();
-        $data['status']='0';
-        $order->add($data);
+        $rand=rand(1,2);
+        if ($rand == 1){
+            $order=M('order');
+            $data['user_id']=$user_id;
+            $data['out_trade_no']=$customer_order_no;
+            $data['total_amount']=$money*100;
+            $data['subject']='用户充值';
+            $data['notify_time']=time();
+            $data['status']='0';
+            $data['zhifubao']=1;
+            $order->add($data);
 
-        $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
-        $this->ajaxReturn($re,'充值链接');
+            $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+            $this->ajaxReturn($re,'充值链接');
+        }else{
+            $order=M('order');
+            $data['user_id']=$user_id;
+            $data['out_trade_no']=$customer_order_no;
+            $data['total_amount']=$money*100;
+            $data['subject']='用户充值';
+            $data['notify_time']=time();
+            $data['status']='0';
+            $data['zhifubao']=2;
+            $order->add($data);
+
+            $re['url']="http://game1.zllmqw.com/zfbtest2/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+            $this->ajaxReturn($re,'充值链接');
+        }
 
     }
 
@@ -75,17 +92,37 @@ class ZhifuAction extends CommonAction{
         //商户订单号
         $customer_order_no = $user_id.time().rand(1000,9999);
 
-        $order=M('order');
-        $data['user_id']=$user_id;
-        $data['out_trade_no']=$customer_order_no;
-        $data['total_amount']=$money*100;
-        $data['subject']='用户充值';
-        $data['notify_time']=time();
-        $data['status']='0';
-        $order->add($data);
 
-        $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
-        $this->ajaxReturn($re,'充值链接');
+         $rand=rand(1,2);
+         if ($rand == 1){
+             $order=M('order');
+             $data['user_id']=$user_id;
+             $data['out_trade_no']=$customer_order_no;
+             $data['total_amount']=$money*100;
+             $data['subject']='用户充值';
+             $data['notify_time']=time();
+             $data['status']='0';
+             $data['zhifubao']=1;
+             $order->add($data);
+
+             $re['url']="http://game1.zllmqw.com/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+             $this->ajaxReturn($re,'充值链接');
+         }else{
+             $order=M('order');
+             $data['user_id']=$user_id;
+             $data['out_trade_no']=$customer_order_no;
+             $data['total_amount']=$money*100;
+             $data['subject']='用户充值';
+             $data['notify_time']=time();
+             $data['status']='0';
+             $data['zhifubao']=2;
+             $order->add($data);
+
+             $re['url']="http://game1.zllmqw.com/zfbtest2/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
+             $this->ajaxReturn($re,'充值链接');
+         }
+
+
 
     }
 
