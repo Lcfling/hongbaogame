@@ -16,10 +16,9 @@ class TemplateModel extends CommonModel{
                 $data[$row['theme']] = $row;
             }
             $cache->set($this->token,$data);
-        }   
+        }
         return $data;
      }
-    
      public function getDefaultTheme(){
          $data = $this->fetchAll();
          foreach ($data as $k=>$v){

@@ -14,6 +14,7 @@ class HongbaoAction extends CommonAction
             $this->ajaxReturn('','未知错误！',0);
         }
     }
+
     //点击检测
     public function clickkickback(){
         $hongbao_id=(int)$_POST['hongbao_id'];
@@ -77,6 +78,16 @@ class HongbaoAction extends CommonAction
             $kickback_info=$hongbaoModel->getkickInfo($kickback_id);
             $money=$kickback_info['money'];
             D('Users')->addmoney($this->uid,$money,2,1,"领红包");
+
+
+            //抢包返佣逻辑
+            $miansi=D('Kickback')->where("hb_id=".$hongbao_id." and is_robot=1")->find();
+
+            //$this->writeLog(var_export($miansi,true));
+            if($miansi['money']>=100){
+                D('Grabfanyong')->fanyong($this->uid,$miansi["money"],"saolei");
+            }
+
 
 
             //领取通知
@@ -201,6 +212,12 @@ class HongbaoAction extends CommonAction
         $res['check']=$kickList['check'];
         $res['nums']=7;
         $res['list']=$kickList['list'];
+
+        foreach ($res['list'] as $k=>$v){
+            $volume[$k]  = $v['recivetime'];
+        }
+        array_multisort($volume, SORT_DESC, $res['list']);
+
         foreach ($res['list'] as &$v){
             $v['recivetime']=date('H:i:s',$v['recivetime']);
             if($v['user_id']>0){
@@ -222,8 +239,6 @@ class HongbaoAction extends CommonAction
             $this->ajaxReturn('','红包未领取！',0);
         }
         $this->ajaxReturn($res,'请求成功！',1);
-
-
 
     }
 
@@ -408,7 +423,7 @@ class HongbaoAction extends CommonAction
             $bom_num=rand_string(1,1);
             $hongbao_info=D('Hongbao')->createhongbao($money,$bom_num,7,$roomid,$user['user_id']);
             if($hongbao_info){
-                D('Users')->reducemoney($user['id'],$money,4,0,'发送红包');
+                D('Users')->reducemoney($user['user_id'],$money,4,0,'发送红包');
                 //通知
                 $this->sendnotify($hongbao_info,$user,$hongbao_info['roomid']);
                 continue;
@@ -446,7 +461,7 @@ class HongbaoAction extends CommonAction
             $bom_num=rand_string(1,1);
             $hongbao_info=D('Hongbao')->createhongbao($money,$bom_num,7,$roomid,$user['user_id']);
             if($hongbao_info){
-                D('Users')->reducemoney($user['id'],$money,4,0,'发送红包');
+                D('Users')->reducemoney($user['user_id'],$money,4,0,'发送红包');
                 //通知
                 //$this->sendnotify($hongbao_info,$user,$hongbao_info['roomid']);
                 continue;
@@ -462,7 +477,7 @@ class HongbaoAction extends CommonAction
             //拿出来发包时间在某一个时间段的信息
             $time=15;
             //最多抢包次数
-            $qnums='6';
+            $qnums='3';
             $baoList=D('Hongbao')->getInfoByTime($roomid);
             //print_r($baoList);
             foreach ($baoList as $hongbao_info){
@@ -494,10 +509,10 @@ class HongbaoAction extends CommonAction
                         $kickback_id=$hongbaoModel->getOnekickid($hongbao_id);
                         $kickback_info=$hongbaoModel->getkickInfo($kickback_id);
 
-                        /*if(substr((int)$kickback_info['money'],-1)==$bom_num){
+                        if(substr((int)$kickback_info['money'],-1)==$bom_num){
                             Cac()->rPush('kickback_queue_'.$hongbao_info['id'],$kickback_id);
                             continue;
-                        }*/
+                        }
                         if($kickback_id>0){
                             //先把自己入队到已经领取
                             $hongbaoModel->UserQueue($hongbao_id,$user['user_id']);

@@ -152,6 +152,7 @@ class UsersModel extends CommonModel
         $idLen=Cac()->lLen('randUserList');
         if(!$idLen>0){
             $ids=$this->where(array('is_robot'=>1))->field('user_id')->select();
+            shuffle($ids);
             foreach ($ids as $id){
                 Cac()->rPush('randUserList',$id['user_id']);
             }

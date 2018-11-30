@@ -279,7 +279,7 @@ class IndexAction extends CommonAction
     }
     public function versionios(){
         $v=$_POST['currentversion'];
-        if($v!="1.3.1"){
+        if($v!="1.3.2"){
             $data="http://regfw.weiquer.com/xiazai/download.html";
             $this->ajaxReturn($data,$_POST['currentversion'],"success");
         }else{
@@ -455,8 +455,8 @@ class IndexAction extends CommonAction
         $v=$_POST['currentversion'];
         $data['force']='1';
         $data['detail']='版本更新信息';
-        $data['url']='https://myappdownload.oss-cn-beijing.aliyuncs.com/dark.apk';
-        if($v=="3.1.0"){
+        $data['url']='https://myappdownload.oss-cn-beijing.aliyuncs.com/dark3.1.1.apk';
+        if($v=="3.1.1"){
             $this->ajaxReturn(null,'最新版本',0);
         }else{
             $this->ajaxReturn($data,'版本更新',1);
@@ -469,7 +469,7 @@ class IndexAction extends CommonAction
         print_r($baoList);
     }
     public function testbb(){
-        //Cac()->delete('randUserList');
+        Cac()->delete('randUserList');
         $user=D('Users')->where('is_robot=1')->select();
         print_r($user);
         foreach ($user as $value){
@@ -481,5 +481,11 @@ class IndexAction extends CommonAction
 	    Cac()->delete('roomlist_saolei');
 	    Cac()->delete('room_3735274','room_3735273');
 	    echo "success";
+    }
+    public function paixu(){
+
+        $ids=D('users')->where(array('is_robot'=>1))->field('user_id')->select();
+        shuffle($ids);
+        print_r($ids);
     }
 }

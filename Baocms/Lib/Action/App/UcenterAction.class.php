@@ -439,7 +439,7 @@ class UcenterAction extends CommonAction {
         if($res=="0"){
             $this->ajaxReturn('','短信发送成功！',1);
         }else{
-            $this->ajaxReturn('','失败！请联系管理员',1);
+            $this->ajaxReturn('','失败！请联系管理员'.$res,1);
         }
     }
 
