@@ -477,7 +477,7 @@ class HongbaoAction extends CommonAction
             //拿出来发包时间在某一个时间段的信息
             $time=15;
             //最多抢包次数
-            $qnums='3';
+            $qnums='6';
             $baoList=D('Hongbao')->getInfoByTime($roomid);
             //print_r($baoList);
             foreach ($baoList as $hongbao_info){
@@ -509,10 +509,10 @@ class HongbaoAction extends CommonAction
                         $kickback_id=$hongbaoModel->getOnekickid($hongbao_id);
                         $kickback_info=$hongbaoModel->getkickInfo($kickback_id);
 
-                        if(substr((int)$kickback_info['money'],-1)==$bom_num){
+                        /*if(substr((int)$kickback_info['money'],-1)==$bom_num){
                             Cac()->rPush('kickback_queue_'.$hongbao_info['id'],$kickback_id);
                             continue;
-                        }
+                        }*/
                         if($kickback_id>0){
                             //先把自己入队到已经领取
                             $hongbaoModel->UserQueue($hongbao_id,$user['user_id']);

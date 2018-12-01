@@ -121,5 +121,4 @@ class CommonAction extends BaseAction {
         file_put_contents ( "./syslog.txt", date ( "Y-m-d H:i:s" ) . "  " . $text . "\r\n", FILE_APPEND );
 
     }
-
 }
