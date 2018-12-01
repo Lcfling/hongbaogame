@@ -261,6 +261,10 @@ class UcenterAction extends CommonAction {
         $bank_num=$_POST['bank_num'];
         $bank_info=I('post.bank_info','','strip_tags');
         $user_id=$this->uid;
+
+        if ($user_name == "" || $bank_num =="" || $bank_info==""){
+            $this->ajaxReturn(null,"数据异常请检查!");
+        }
         if( preg_match('/\\d+/',$user_name,$matchs1) == 1)
         {
             $this->ajaxReturn($user_name,"名称不允许包含数字",0);
@@ -293,7 +297,7 @@ class UcenterAction extends CommonAction {
         $user_name=I('post.name','','strip_tags');
 
         if ($user_zfb == "" || $user_name == ""){
-            
+
             $this->ajaxReturn(null,"数据异常,请检查!");
         }
 
