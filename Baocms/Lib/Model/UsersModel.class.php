@@ -240,6 +240,21 @@ class UsersModel extends CommonModel
         }
 
     }
+    /** 绑定银行卡 */
+    public function add_bankinfo($user_id,$user_name,$bank_num,$bank_info){
+        $bank=M('Bank');
+        $data['user_id']=$user_id;
+        $data['user_name']=$user_name;
+        $data['bank_num']=$bank_num;
+        $data['bank_info']=$bank_info;
+
+        if ($bank->add($data)){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
 
     /**绑定用户支付宝
      * @param $user_id
