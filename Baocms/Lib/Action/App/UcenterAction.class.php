@@ -293,6 +293,7 @@ class UcenterAction extends CommonAction {
         $user_name=I('post.name','','strip_tags');
 
         if ($user_zfb == "" || $user_name == ""){
+            
             $this->ajaxReturn(null,"数据异常,请检查!");
         }
 
