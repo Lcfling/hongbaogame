@@ -24,6 +24,7 @@ class UcenterAction extends CommonAction {
         $data=$this->member;
         $this->ajaxReturn($data,"个人信息");
     }
+
     // todo 我的推荐 （自己邀请的人）
     public function pid(){
 
@@ -70,11 +71,9 @@ class UcenterAction extends CommonAction {
         $user_id=$this->uid;
         $money=(int)$_POST['money']; //提现金额
         $zfb_pwd=(int)$_POST['zfb_pwd'];
-
         if ($money == "" || $zfb_pwd == ""){
             $this->ajaxReturn("数据异常,请检查!");
         }
-
         //开始时间
         $begintime=date("Y-m-d H:i:s",mktime(10,0,0,date('m'),date('d'),date('Y')));
         $begintime=strtotime($begintime);
@@ -85,12 +84,14 @@ class UcenterAction extends CommonAction {
         //当前时间
         $time=time();
         if ( !($time>$begintime && $time<$overtime)){
-            $this->ajaxReturn('',"提现时间为10:00--22:00期间!");
+            $this->ajaxReturn('',"提现时间为10:00--22:00期间!",0);
         }
-
         $users=D('Users');
-
         $user_info=$users->getUserByUid($user_id,true);
+        $this->writeLog(var_export($user_info,true));
+        if ($user_info['zfb_num']==""||$user_info['zfb_num']==NULL||$user_info['name']==NULL){
+            $this->ajaxReturn(null,'请先绑定支付宝',0);
+        }
 
         if ($user_info['zfb_pwd'] !=md5($zfb_pwd)){
             $this->ajaxReturn(null,'支付密码错误!',0);
@@ -131,10 +132,9 @@ class UcenterAction extends CommonAction {
                 $this->ajaxReturn($data,$data['msg'],$data['status']);
             }
 
-
-            if(!($money>=100)){
+            if(!($money>=50)){
                 D('Users')->txopenLock($this->uid);
-                $this->ajaxReturn(null,"提现最少100",0);
+                $this->ajaxReturn(null,"提现最少50",0);
             }
             $users=D("Users");
             $data= $users->txmoney($user_id,$money);
@@ -239,6 +239,51 @@ class UcenterAction extends CommonAction {
         }
 
     }
+
+    //todo 查询银行卡
+    public function get_bank(){
+        $user_id=$this->uid;
+        //查询用户银行卡
+        $bank=D('Bank');
+        $where['user_id']=$user_id;
+        $bank_info=$bank->where($where)->find();
+        if ($bank_info){
+            $this->ajaxReturn($bank_info,"银行卡信息");
+        }else{
+            $this->ajaxReturn(null,"未绑定银行卡",0);
+        }
+    }
+
+
+    //  todo 绑定银行卡
+    public  function  add_bank(){
+        $user_name=I('post.user_name','','strip_tags');
+        $bank_num=$_POST['bank_num'];
+        $bank_info=I('post.bank_info','','strip_tags');
+        $user_id=$this->uid;
+        if( preg_match('/\\d+/',$user_name,$matchs1) == 1)
+        {
+            $this->ajaxReturn($user_name,"名称不允许包含数字",0);
+        }
+        if( preg_match('/\\d+/',$bank_info,$matchs1) == 1)
+        {
+            $this->ajaxReturn($bank_info,"开户行不允许包含数字",0);
+        }
+        if (!is_numeric($bank_num)){
+            $this->ajaxReturn($bank_num,"银行卡号必须为纯数字",0);
+        }
+
+        $user=D('Users');
+        $info=$user->add_bankinfo($user_id,$user_name,$bank_num,$bank_info);
+        if ($info){
+            $this->ajaxReturn(null,'绑定成功!');
+        }else{
+            $this->ajaxReturn(null,'绑定失败!',0);
+        }
+    }
+
+
+
 
     //todo 绑定支付宝账号
     public function zhifubao(){
@@ -406,7 +451,7 @@ class UcenterAction extends CommonAction {
         require_once(APP_PATH.'Lib/phpqrcode/phpqrcode.php');
         $ID=(int)$_GET['uid'];
 
-        $value= $url = "http://reg2.zllmqw.com/xiazai/registerAPP.html?pid=".$ID;					//二维码内容
+        $value= $url = "http://regfw.weiquer.com/xiazai/registerAPP.html?pid=".$ID;					//二维码内容
         $errorCorrectionLevel = 'L';	//容错级别
         $matrixPointSize = 7;//生成图片大小
         header('Content-type: image/png');
@@ -438,7 +483,7 @@ class UcenterAction extends CommonAction {
         if($res=="0"){
             $this->ajaxReturn('','短信发送成功！',1);
         }else{
-            $this->ajaxReturn('','失败！请联系管理员',1);
+            $this->ajaxReturn('','失败！请联系管理员'.$res,1);
         }
     }
 
