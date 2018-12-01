@@ -241,6 +241,51 @@ class UcenterAction extends CommonAction {
 
     }
 
+    //todo 查询银行卡
+    public function get_bank(){
+        $user_id=$this->uid;
+        //查询用户银行卡
+        $bank=D('Bank');
+        $where['user_id']=$user_id;
+        $bank_info=$bank->where($where)->find();
+        if ($bank_info){
+            $this->ajaxReturn($bank_info,"银行卡信息");
+        }else{
+            $this->ajaxReturn(null,"未绑定银行卡",0);
+        }
+    }
+
+
+    //  todo 绑定银行卡
+    public  function  add_bank(){
+        $user_name=I('post.user_name','','strip_tags');
+        $bank_num=$_POST['bank_num'];
+        $bank_info=I('post.bank_info','','strip_tags');
+        $user_id=$this->uid;
+        if( preg_match('/\\d+/',$user_name,$matchs1) == 1)
+        {
+            $this->ajaxReturn($user_name,"名称不允许包含数字",0);
+        }
+        if( preg_match('/\\d+/',$bank_info,$matchs1) == 1)
+        {
+            $this->ajaxReturn($bank_info,"开户行不允许包含数字",0);
+        }
+        if (!is_numeric($bank_num)){
+            $this->ajaxReturn($bank_num,"银行卡号必须为纯数字",0);
+        }
+
+        $user=D('Users');
+        $info=$user->add_bankinfo($user_id,$user_name,$bank_num,$bank_info);
+        if ($info){
+            $this->ajaxReturn(null,'绑定成功!');
+        }else{
+            $this->ajaxReturn(null,'绑定失败!',0);
+        }
+    }
+
+
+
+
     //todo 绑定支付宝账号
     public function zhifubao(){
 
