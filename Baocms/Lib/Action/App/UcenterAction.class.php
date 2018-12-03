@@ -89,10 +89,15 @@ class UcenterAction extends CommonAction {
         $users=D('Users');
         $user_info=$users->getUserByUid($user_id,true);
         $this->writeLog(var_export($user_info,true));
-        if ($user_info['zfb_num']==""||$user_info['zfb_num']==NULL||$user_info['name']==NULL){
+        /*if ($user_info['zfb_num']==""||$user_info['zfb_num']==NULL||$user_info['name']==NULL){
             $this->ajaxReturn(null,'请先绑定支付宝',0);
+        }*/
+        $bank=D('Bank');
+        $where['user_id']=$user_id;
+        $bank_info=$bank->where($where)->find();
+        if (!$bank_info){
+            $this->ajaxReturn(null,"请先绑定银行卡",0);
         }
-
         if ($user_info['zfb_pwd'] !=md5($zfb_pwd)){
             $this->ajaxReturn(null,'支付密码错误!',0);
         }

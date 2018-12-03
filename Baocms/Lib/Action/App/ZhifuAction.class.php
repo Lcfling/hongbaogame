@@ -24,7 +24,7 @@ class ZhifuAction extends CommonAction{
     public function indexs(){
         // 用户id
         $user_id=$this->uid;
-
+        //$this->ajaxReturn(null,'充值维护中！',0);
 
         //订单金额
         $money=(int)$_POST['money'];
@@ -82,7 +82,7 @@ class ZhifuAction extends CommonAction{
         // 用户id
         $user_id=$this->uid;
 
-
+        //$this->ajaxReturn(null,'充值维护中！',0);
         //订单金额
         $money=(int)$_POST['money'];
 
