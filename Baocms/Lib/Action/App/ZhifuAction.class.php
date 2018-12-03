@@ -173,6 +173,7 @@ class ZhifuAction extends CommonAction{
                     $info['remark']='支付宝充值';
                     $info['is_afect']=1;
                     $paid->add($info);
+                    
                 }
 
             }
