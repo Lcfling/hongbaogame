@@ -398,7 +398,10 @@ class HongbaoAction extends CommonAction
 
     public function aotudosend(){
         //获取随机用户
-
+        $k=$_GET['key'];
+        if($k!='dbak3s7fhash34fah39t'){
+            die('大哥 别乱搞！');
+        }
         //获取房间列表
         $roomlist=D('Room')->getroomlist('saolei');
         foreach ($roomlist as $roomdata){
@@ -413,7 +416,12 @@ class HongbaoAction extends CommonAction
             if($ranstatus>700000){
                 $money=$money+1000;
             }elseif($ranstatus<300000){
-                $money=$money+4000;
+                $money=$money+3000;
+            }
+            $rands2=rand_string(2,1);
+            if($rands2>65&&$money<5000){
+                $randm=rand_string(3,1);
+                $money=(int)$money+(int)$randm;
             }
             /*if($money>3000){
                 if($ransfabao>200000){
@@ -435,7 +443,10 @@ class HongbaoAction extends CommonAction
     //刷包  不发通知
     public function maotudosend(){
         //获取随机用户
-
+        $k=$_GET['key'];
+        if($k!='dbak3s7fhash34fah39t'){
+            die('大哥 别乱搞！');
+        }
         //获取房间列表
         $roomlist=D('Room')->getroomlist('saolei');
         foreach ($roomlist as $roomdata){
@@ -452,7 +463,7 @@ class HongbaoAction extends CommonAction
             }elseif($ranstatus<300000){
                 $money=$money+4000;
             }
-            $money=60000;
+            $money=160000;
             /*if($money>3000){
                 if($ransfabao>200000){
                     continue;
@@ -471,13 +482,19 @@ class HongbaoAction extends CommonAction
 
     //机器人自动清包
     public function aotuopenkick(){
+        $k=$_GET['key'];
+        if($k!='dbak3s7fhash34fah39t'){
+            die('大哥 别乱搞！');
+        }
+
+        $config=unserialize(Cac()->get('Setting_robot'));
         $roomlist=D('Room')->getroomlist('saolei');
         foreach ($roomlist as $roomdata){
             $roomid=$roomdata['room_id'];
             //拿出来发包时间在某一个时间段的信息
-            $time=15;
+            $time=$config['time'];
             //最多抢包次数
-            $qnums='6';
+            $qnums=$config['packNum'];
             $baoList=D('Hongbao')->getInfoByTime($roomid);
             //print_r($baoList);
             foreach ($baoList as $hongbao_info){
@@ -485,7 +502,7 @@ class HongbaoAction extends CommonAction
                     //获取一个机器人用户
 
                     //echo
-                    if($hongbao_info['money']<=5000){
+                    if($hongbao_info['money']<=$config['packMoney']){
                         $hongbao_id=$hongbao_info['id'];//红包id
                         Cac()->rPush("robot_rob_h".$hongbao_id,1);
                         if(Cac()->lLen("robot_rob_h".$hongbao_id)>$qnums){
@@ -509,10 +526,13 @@ class HongbaoAction extends CommonAction
                         $kickback_id=$hongbaoModel->getOnekickid($hongbao_id);
                         $kickback_info=$hongbaoModel->getkickInfo($kickback_id);
 
-                        /*if(substr((int)$kickback_info['money'],-1)==$bom_num){
-                            Cac()->rPush('kickback_queue_'.$hongbao_info['id'],$kickback_id);
-                            continue;
-                        }*/
+                        if($config['lei']>0){
+                            if(substr((int)$kickback_info['money'],-1)==$bom_num){
+                                Cac()->rPush('kickback_queue_'.$hongbao_info['id'],$kickback_id);
+                                continue;
+                            }
+                        }
+
                         if($kickback_id>0){
                             //先把自己入队到已经领取
                             $hongbaoModel->UserQueue($hongbao_id,$user['user_id']);
