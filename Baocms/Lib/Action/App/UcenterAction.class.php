@@ -125,8 +125,8 @@ class UcenterAction extends CommonAction {
 
 
 
-        if ($fb_money[0]['money']*-1>=$money*100 ||$lb_money[0]['money']>=$money*100 || $yj_money[0]['money']>=$money*100){
-
+        /*if ($fb_money[0]['money']*-1>=$money*100 ||$lb_money[0]['money']>=$money*100 || $yj_money[0]['money']>=$money*100){*/
+        if (1){
             $user_money=$users->getUserMoney($user_id);
 
 
@@ -449,7 +449,8 @@ class UcenterAction extends CommonAction {
     public function get_renking(){
         $type=(int)$_POST['type'];
         $data=Cac()->get('phb_'.$type);
-        $this->ajaxReturn(unserialize($data),"排行榜");
+        $this->ajaxReturn(null,"排行榜",0);
+        //$this->ajaxReturn(unserialize($data),"排行榜");
     }
 
     public function haibao(){

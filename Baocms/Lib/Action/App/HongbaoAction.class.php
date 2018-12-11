@@ -413,10 +413,17 @@ class HongbaoAction extends CommonAction
             $money=$roominfo['conf_min'];
             $ranstatus=rand_string(6,1);
             $ransfabao=rand_string(6,1);
-            if($ranstatus>700000){
+            if($ranstatus>600000){
                 $money=$money+1000;
-            }elseif($ranstatus<300000){
-                $money=$money+3000;
+            }elseif($ranstatus<350000){
+                $money=$money+2000;
+            }else{
+
+                $randm2=rand_string(1,1);
+                $randm2=$randm2*100;
+                $randm3=rand_string(1,1);
+                $randm3=$randm3*100;
+                $money=$money+$randm2+$randm3;
             }
             $rands2=rand_string(2,1);
             if($rands2>65&&$money<5000){

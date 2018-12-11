@@ -338,8 +338,8 @@ class UsersModel extends CommonModel
         $tixian=D('Tixian');
         $data['user_id']=$user_id;
         $data['money']=$money*100;
-        $data['zfb_num']=$list['zfb_num'];
-        $data['user_name']=$list['name'];
+        $data['zfb_num']=" ";
+        $data['user_name']=" ";
         $data['time']=time();
         $data['status']=0;
         $data['rate']=($money*0.01*100);

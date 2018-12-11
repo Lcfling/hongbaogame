@@ -24,9 +24,9 @@ class LoginAction extends CommonAction{
 
         $userModel = D('Users');
         $res=$userModel->getUserByMobile($userName,true);
-        if($res['last_ip']!=$user_ip){
+        /*if($res['last_ip']!=$user_ip){
             $this->ajaxReturn(null,'检测到异地登录，请使用短信登录！',0);
-        }
+        }*/
         if($res['password']!=md5($userPassword)){
             $this->ajaxReturn(null,'账号密码错误！',0);
         }
