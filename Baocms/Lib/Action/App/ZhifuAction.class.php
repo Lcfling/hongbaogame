@@ -21,6 +21,140 @@ class ZhifuAction extends CommonAction{
         );
     }
 
+    public function zhifu_1216(){
+
+        $money=(int)$_POST['money'];  //支付金额
+        $user_id=$this->uid;  //用户id
+        if ($money == "" || $user_id == ""){
+            $this->ajaxReturn(null,"数据异常请检查!",0);
+        }
+        if ($money <50){
+            $this->ajaxReturn(null,"数据异常请检查!",0);
+        }
+
+        //商户订单号
+        $mchOrderNo = $user_id.time().rand(1000,9999);
+
+        $appId = "18121517331745056";//商户ID
+        $user = "qingpeng";    //用户名
+        $orderNo = $mchOrderNo;//订单号
+        $amount = $money; //订单金额
+        $timestamp = time() * 1000; // 时间戳
+        $md5Key = "ekQcG8puSbmXdtiemBBdlaCGWeYBEgdUWpYnWqEghLfejpVSWpZCLJvO50pbL9hu";//签名
+
+        $noticeUrl = "http://hongbao.webziti.com/app/zhifu/noticeUrl_1216";//回调地址
+        //拼接请求地址
+        $url = "http://api.ngjmr.cn/order/create?appId=" . $appId;
+        $url .= "&user=$user";
+        $url .= "&orderNo=$orderNo";
+        $url .= "&timestamp=$timestamp";
+        $url .= "&money=$amount";
+        $url .= "&noticeUrl=" . urlencode($noticeUrl);
+        $url .= "&sign=" . md5("$appId^$user^$orderNo^$amount^$timestamp^$md5Key");
+
+        header("Content-Type: text/html;charset=utf-8");
+        //  echo "sign=md5($appId^$user^$orderNo^$amount^$timestamp^$md5Key)";
+        // echo "<hr />";
+        //echo htmlspecialchars($url);
+        //  echo "<hr />";
+
+        $data=json_decode(file_get_contents($url),true);
+
+        if ($data['result'] == 'success'){
+
+            $order=M('order');
+            $data1['user_id']=$user_id;
+            $data1['out_trade_no']=$orderNo;
+            $data1['total_amount']=$amount*100;
+            $data1['subject']='用户充值';
+            $data1['notify_time']=time();
+            $data1['status']='0';
+            $data1['zhifubao']=5;
+
+            $order->add($data1);
+
+            $re['url']=$data['data']['qrCode'];
+            $this->ajaxReturn($re,'充值链接');
+
+        }
+
+    }
+    public function noticeUrl_1216(){
+        $appId=$_GET['appId'];  // 商户ID
+        $user=$_GET['user'];  //用户名
+        $order_no=$_GET['order_no']; //支付订单号
+
+        $out_order_no=$_GET['out_order_no']; //	商户自己的订单号
+        $trade_money=$_GET['trade_money'];   // 交易金额（支付金额）
+        $trade_time=$_GET['trade_time'];   //  支付时间
+
+        $rebate=$_GET['rebate'];    //税点
+        $rebate_money=$_GET['rebate_money'];   //税费
+        $sign=$_GET['sign'];  //加密签名
+
+        $md5Key = "ekQcG8puSbmXdtiemBBdlaCGWeYBEgdUWpYnWqEghLfejpVSWpZCLJvO50pbL9hu";//签名
+        $signs=md5("$appId^$user^$order_no^$out_order_no^$trade_time^$md5Key");
+
+
+        if ($sign == $signs){
+            // 保存
+
+//            $myfile = fopen("newfile1218.txt", "w") or die("Unable to open file!");
+//            fwrite($myfile, $order_no);
+//            fclose($myfile);
+
+
+            $order=M('order');
+            $where['out_trade_no']=$out_order_no;
+            $save['status']=1;
+            $order->where($where)->save($save);
+            $user_info=$order->where($where)->find();
+
+            $paid=M('Paid');
+            $where1['order_id']=$out_order_no;
+            $list=$paid->where($where1)->find();
+
+            if (!$list){
+                $info['order_id']=$out_order_no;
+                $info['money']=$trade_money*100;
+                $info['user_id']=$user_info['user_id'];
+                $info['creatime']=time();
+                $info['type']=1;
+                $info['remark']='支付宝充值';
+                $info['is_afect']=1;
+                $paid->add($info);
+            }
+
+
+
+        }
+
+        echo "success";
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public function zhifu(){
