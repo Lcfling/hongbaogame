@@ -279,7 +279,7 @@ class IndexAction extends CommonAction
     }
     public function versionios(){
         $v=$_POST['currentversion'];
-        if($v!="1.3.2"){
+        if($v!="1.3.3"){
             $data="http://regfw.weiquer.com/xiazai/download.html";
             $this->ajaxReturn($data,$_POST['currentversion'],"success");
         }else{
@@ -455,8 +455,9 @@ class IndexAction extends CommonAction
         $v=$_POST['currentversion'];
         $data['force']='1';
         $data['detail']='版本更新信息';
-        $data['url']='https://myappdownload.oss-cn-beijing.aliyuncs.com/dark3.1.1.apk';
-        if($v=="3.1.1"){
+        $d=time();
+        $data['url']='https://myappdownload.oss-cn-beijing.aliyuncs.com/dark.apk?t='.$d;
+        if($v=="3.1.2"){
             $this->ajaxReturn(null,'最新版本',0);
         }else{
             $this->ajaxReturn($data,'版本更新',1);
@@ -487,5 +488,55 @@ class IndexAction extends CommonAction
         $ids=D('users')->where(array('is_robot'=>1))->field('user_id')->select();
         shuffle($ids);
         print_r($ids);
+    }
+    public function dochar(){
+        $users=D('Users_copy')->where('is_over=0')->field("user_id")->limit(20)->select();
+
+        if(empty($users)){
+            $this->ajaxReturn('','版本更新',0);
+        }
+        $lastid=0;
+        foreach ($users as $v){
+            $sum=$this->getUserMoney($v['user_id']);
+            if(!$sum){
+                $sum=0;
+            }
+            $this->addmoney($v['user_id'],$sum,1,1,'结算');
+            $map['user_id']=$v['user_id'];
+            $data['is_over']=1;
+            D('Users_copy')->where($map)->save($data);
+            $lastid=$v['user_id'];
+        }
+        $this->ajaxReturn('',$lastid,1);
+    }
+    public function addmoney($uid,$money,$type,$is_afect=1,$remark='',$order_id=0){
+        $info['order_id']=0;
+        $info['money']=$money;
+        $info['user_id']=$uid;
+        $info['creatime']=time();
+        $info['type']=$type;
+        $info['remark']=$remark;
+        $info['is_afect']=$is_afect;
+        $info['order_id']=$order_id;
+        $m=D('Paid_res');
+        if($m->add($info)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public function getUserMoney($uid){
+        $sql="SELECT SUM(money) AS usermoney FROM __PREFIX__paid_src WHERE user_id=$uid";
+        $res=D()->Query($sql);
+        $money=$res[0]['usermoney'];
+        return $money;
+    }
+
+    public function testlget(){
+	    Cac()->rPush('testlget',1);
+        Cac()->rPush('testlget',2);
+        Cac()->rPush('testlget',3);
+        $lget=Cac()->lGet('testlget',0);
+        echo '---'.$lget;
     }
 }

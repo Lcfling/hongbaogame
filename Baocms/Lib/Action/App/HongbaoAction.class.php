@@ -426,7 +426,7 @@ class HongbaoAction extends CommonAction
                 $money=$money+$randm2+$randm3;
             }
             $rands2=rand_string(2,1);
-            if($rands2>65&&$money<5000){
+            if($rands2>95&&$money<5000){
                 $randm=rand_string(3,1);
                 $money=(int)$money+(int)$randm;
             }
