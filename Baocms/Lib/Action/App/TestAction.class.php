@@ -402,7 +402,7 @@ class TestAction extends CommonAction{
                     $zhuang['start_time'] = 60 - (time() - $start_time);
                     // 通知系统庄家信息  开始下注
                     $this->sendnotify($room_id,$zhuang,6);
-//
+
                     //记录当前状态
                     $fj_info = unserialize(Cac()->get("qz_status_".$room_id));
 
@@ -421,6 +421,12 @@ class TestAction extends CommonAction{
         }
     }
 
+    //todo 庄家开奖记录
+    public function kaijiang(){
+        $data= D()->query("select * from  bao_erba_zhuang  ORDER  by chang_id DESC  limit 10");
+
+        $this->ajaxReturn($data,'庄家开奖记录');
+    }
 
     private function sendnotify_hb($room_id,$userinfo,$type)
     {
