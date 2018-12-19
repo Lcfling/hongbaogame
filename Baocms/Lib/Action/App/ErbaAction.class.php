@@ -68,8 +68,8 @@ class ErbaAction extends CommonAction{
         }
 
 
-            //抢庄记录时间
-         $air_time=Cac()->get("qz_airtime_".$room_id);
+        //抢庄记录时间
+        $air_time=Cac()->get("qz_airtime_".$room_id);
 
         if (empty($air_time)){
             //记录抢庄开始时间
@@ -84,17 +84,21 @@ class ErbaAction extends CommonAction{
         $data['user_id']=$user_id;
         $data['money']=$money*100;
         $data['nickname']=$user_info['nickname'];
-           //抢庄开始时间
+        //抢庄开始时间
 
         //抢庄信息存入缓存
-       $ErbaModel->set_qz($room_id,$user_id,$data);
+        $ErbaModel->set_qz($room_id,$user_id,$data);
 
         //记录当前状态
         $fj_info['status']=1;
         $fj_info['nickname']="";
         $fj_info['money']="";
         $fj_info['chang_id']="";
-        $fj_info['shangzhuang_money']=300000;
+        // 获取房间数据
+        $room=M('room');
+        $whrer['room_id']=3735277;
+        $room_data=$room->where($whrer)->find();
+        $fj_info['shangzhuang_money']=$room_data['conf_min'];
         Cac()->set("qz_status_".$room_id,serialize($fj_info));
         $air_time=Cac()->get("qz_airtime_".$room_id);
 
@@ -131,8 +135,15 @@ class ErbaAction extends CommonAction{
         if ($money<10){
             $this->ajaxReturn(null,'最低下注为10元!',0);
         }
+        // 判断用户余额
+        $UserModel=D('Users');
+        $usermoney=$UserModel->getusermoney($user_id);
+        if($usermoney<$money*100*5){
+            Cac()->del("ble_money");
+            $this->ajaxReturn(null,'最大赔率余额不足请充值!',0);
+        }
 
-         $ErbaModel=D('Erba');
+        $ErbaModel=D('Erba');
         // 是否是下注时间
         if (!($ErbaModel->if_time($room_id,$chang_id)) ){
             Cac()->del("ble_money");
@@ -145,11 +156,14 @@ class ErbaAction extends CommonAction{
             Cac()->del("ble_money");
             $this->ajaxReturn(null,"庄家不允许下注!",0);
         }
+
+
         //        //  判断庄下注金额
         if ( !($ErbaModel->if_money($room_id,$money)) ){
             Cac()->del("ble_money");
             $this->ajaxReturn(null,'超出盘口了!',0);
         }
+
 
 
         //判断是否重复下注
@@ -173,17 +187,6 @@ class ErbaAction extends CommonAction{
         }
 
 
-
-        // 判断用户余额
-        $UserModel=D('Users');
-        $usermoney=$UserModel->getusermoney($user_id);
-        if($usermoney<$money*100*5){
-            Cac()->del("ble_money");
-            $this->ajaxReturn(null,'最大赔率余额不足请充值!',0);
-        }
-
-
-
         //进行下注
         $user_list=$ErbaModel->xiazhu($user_id,$money,$chang_id,$room_id);
         //获取用户信息
@@ -193,15 +196,15 @@ class ErbaAction extends CommonAction{
         $user_list['face']=$user_info['face'];
         $user_list['nickname']=$user_info['nickname'];
         $user_list['user_id']=$user_info['user_id'];
-       $air_time=Cac()->get("qz_airtime_".$room_id);
+        $air_time=Cac()->get("qz_airtime_".$room_id);
         $user_list['start_time']=60-(time()-$air_time);
 
-            //通知系统下注信息
-            $this->sendnotify($room_id,$user_list,3);
-            //下注人数++
-            Cac()->incr("qz_count_".$room_id);
-            Cac()->del("ble_money");
-            $this->ajaxReturn($user_list,'下注成功!');
+        //通知系统下注信息
+        $this->sendnotify($room_id,$user_list,3);
+        //下注人数++
+        Cac()->incr("qz_count_".$room_id);
+        Cac()->del("ble_money");
+        $this->ajaxReturn($user_list,'下注成功!');
 
     }
 
@@ -211,7 +214,7 @@ class ErbaAction extends CommonAction{
     public function click_hb(){
         $hongbao_id=(int)$_POST['hongbao_id'];
         $chang_id=(int)$_POST['chang_id'];
-            //获取红包信息
+        //获取红包信息
         $hongbaoModel=D('Erba');
         $hongbao_info=$hongbaoModel->getInfoById($hongbao_id);
         $userInfo=D('Users')->getUserByUid($hongbao_info['user_id']);
@@ -268,7 +271,7 @@ class ErbaAction extends CommonAction{
             $this->ajaxReturn(null,'已经领取过该红包!',0);
         }
 
-      //  判断是否下注的人点包
+        //  判断是否下注的人点包
         if (!($hongbaoModel->xiazhu_info($chang_id,$user_id))){
             $this->ajaxReturn(null,"未下注者不允许抢红包!",0);
         }
@@ -286,8 +289,8 @@ class ErbaAction extends CommonAction{
             //判断是否是最后一个 是的话开始同步数据库信息
             if($hongbaoModel->is_self_last($hongbao_id,$user_id,$room_id)){
 
-                    //获取下注人信息
-                 $xiazhu_info=$hongbaoModel->get_xiazhu($chang_id);
+                //获取下注人信息
+                $xiazhu_info=$hongbaoModel->get_xiazhu($chang_id);
 
                 //获取庄家信息
                 $zhuang_info=$hongbaoModel->zhuang_info($room_id,$chang_id);
@@ -295,7 +298,7 @@ class ErbaAction extends CommonAction{
                 //  庄家解冻金钱
                 $hongbaoModel->zhuang_jiedong($zhuang_info);
 
-                    // 用户给庄家进行对比 赔付
+                // 用户给庄家进行对比 赔付
                 $hongbaoModel->peifu($xiazhu_info,$zhuang_info);
 
                 //设置mysql红包为领取状态为完毕
@@ -306,10 +309,10 @@ class ErbaAction extends CommonAction{
                 //获取最新庄家信息
                 $zhuanginfo=$hongbaoModel->zhuang_info($room_id,$chang_id);
 
-                 foreach ($hb_info as $k=>$v){
-                     $userInfo=D('Users')->getUserByUid($hb_info[$k]['user_id']);
-                     $hb_info[$k]['nickname']=$userInfo['nickname'];
-                 }
+                foreach ($hb_info as $k=>$v){
+                    $userInfo=D('Users')->getUserByUid($hb_info[$k]['user_id']);
+                    $hb_info[$k]['nickname']=$userInfo['nickname'];
+                }
 
                 $zInfo=D('Users')->getUserByUid($zhuang_info['user_id']);
                 $zhuanginfo['nickname']=$zInfo['nickname'];
@@ -329,7 +332,7 @@ class ErbaAction extends CommonAction{
                 $this->sendnotify_info($room_id,$data);
 
                 //解除庄家领取锁
-             //   Cac()->del("get_hongbao".$zhuang_info['user_id']);
+                //   Cac()->del("get_hongbao".$zhuang_info['user_id']);
                 //解除下注人的锁
 //                foreach ($xiazhu_info as $k=>$v){
 //                    Cac()->del("get_hongbao".$xiazhu_info[$k]['user_id']);
@@ -346,15 +349,19 @@ class ErbaAction extends CommonAction{
                     $fj_info['money']="";
                     $fj_info['chang_id']="";
                     $fj_info['start_time']=-1;
-                    $fj_info['shangzhuang_money']=300000;
+                    // 获取房间数据
+                    $room=M('room');
+                    $whrer['room_id']=3735277;
+                    $room_data=$room->where($whrer)->find();
+                    $fj_info['shangzhuang_money']=$room_data['conf_min'];
                     Cac()->set("qz_status_".$room_id,serialize($fj_info));
                 }else{
 
-                //记录当前状态
-                $fj_info= unserialize(Cac()->get("qz_status_".$room_id));
-                $fj_info['status']=4;
-                $fj_info['start_time']=5-(time()-$start_time);
-                Cac()->set("qz_status_".$room_id,serialize($fj_info));
+                    //记录当前状态
+                    $fj_info= unserialize(Cac()->get("qz_status_".$room_id));
+                    $fj_info['status']=4;
+                    $fj_info['start_time']=5-(time()-$start_time);
+                    Cac()->set("qz_status_".$room_id,serialize($fj_info));
                 }
                 $this->ajaxReturn($kickback_info,'领取成功!!!',1);
 
@@ -446,7 +453,7 @@ class ErbaAction extends CommonAction{
 
 
 
-  // todo  用户下庄
+    // todo  用户下庄
     public function xiazhuang(){
 
         $room_id=(int)$_POST['room_id'];
@@ -474,10 +481,10 @@ class ErbaAction extends CommonAction{
     //todo 下注记录
     public function xiazhuinfo(){
         $user_id=$this->uid;
-     $data=D()->query("SELECT *,(SELECT num FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_num ,(SELECT hb_money FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_money from  bao_erba_xiazhu as a    where user_id=$user_id   order by  a.id desc LIMIT 10 
+        $data=D()->query("SELECT *,(SELECT num FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_num ,(SELECT hb_money FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_money from  bao_erba_xiazhu as a    where user_id=$user_id   order by  a.id desc LIMIT 10 
 ");
 
-       $this->ajaxReturn($data,'下注记录');
+        $this->ajaxReturn($data,'下注记录');
     }
 
     //todo  庄家记录
@@ -486,6 +493,7 @@ class ErbaAction extends CommonAction{
         $data= D()->query("select * from  bao_erba_zhuang WHERE   user_id=$user_id  ORDER  by chang_id DESC  limit 10");
         $this->ajaxReturn($data,'庄家记录');
     }
+
     //todo 庄家开奖记录
     public function kaijiang(){
         $data= D()->query("select * from  bao_erba_zhuang  ORDER  by chang_id DESC  limit 10");
@@ -498,36 +506,40 @@ class ErbaAction extends CommonAction{
         $room_id=(int)$_POST['room_id'];
         $fj_info=unserialize( Cac()->get("qz_status_".$room_id));
 
-           if ($fj_info['status'] ==1){
-               $air_time=Cac()->get("qz_airtime_".$room_id);
-               if (empty($air_time)){
-                   //记录当前状态
-                   $fj_info['status']=1;
-                   $fj_info['nickname']="";
-                   $fj_info['money']="";
-                   $fj_info['chang_id']="";
-                   $fj_info['start_time']=-1;
-                   $fj_info['user_id']="";
-                   $fj_info['shangzhuang_money']=300000;
+        if ($fj_info['status'] ==1){
+            $air_time=Cac()->get("qz_airtime_".$room_id);
+            if (empty($air_time)){
+                //记录当前状态
+                $fj_info['status']=1;
+                $fj_info['nickname']="";
+                $fj_info['money']="";
+                $fj_info['chang_id']="";
+                $fj_info['start_time']=-1;
+                $fj_info['user_id']="";
+                // 获取房间数据
+                $room=M('room');
+                $whrer['room_id']=3735277;
+                $room_data=$room->where($whrer)->find();
+                $fj_info['shangzhuang_money']=$room_data['conf_min'];
 
-                   Cac()->set("qz_status_".$room_id,serialize($fj_info));
-                   $this->ajaxReturn($fj_info,'当前房间数据');
-               }else{
-                   $fj_info['start_time']=20-(time()-$air_time);
-                   $this->ajaxReturn($fj_info,'当前房间数据');
-               }
+                Cac()->set("qz_status_".$room_id,serialize($fj_info));
+                $this->ajaxReturn($fj_info,'当前房间数据');
+            }else{
+                $fj_info['start_time']=20-(time()-$air_time);
+                $this->ajaxReturn($fj_info,'当前房间数据');
+            }
 
-           }
-           if ($fj_info['status'] ==2){
-               $air_time=Cac()->get("qz_airtime_".$room_id);
-               $fj_info['start_time']=60-(time()-$air_time);
-               $this->ajaxReturn($fj_info,'当前房间数据');
-           }
-           if ($fj_info['status'] ==3){
-               $air_time=Cac()->get("qz_airtime_".$room_id);
-               $fj_info['start_time']=10-(time()-$air_time);
-               $this->ajaxReturn($fj_info,'当前房间数据');
-           }
+        }
+        if ($fj_info['status'] ==2){
+            $air_time=Cac()->get("qz_airtime_".$room_id);
+            $fj_info['start_time']=60-(time()-$air_time);
+            $this->ajaxReturn($fj_info,'当前房间数据');
+        }
+        if ($fj_info['status'] ==3){
+            $air_time=Cac()->get("qz_airtime_".$room_id);
+            $fj_info['start_time']=10-(time()-$air_time);
+            $this->ajaxReturn($fj_info,'当前房间数据');
+        }
         if ($fj_info['status'] ==4){
             $air_time=Cac()->get("qz_airtime_".$room_id);
             $fj_info['start_time']=5-(time()-$air_time);
@@ -595,7 +607,7 @@ class ErbaAction extends CommonAction{
             'roomid'=>$room_id,
             'm'=>2,
             'data'=>$hb_info,
-             'start_time'=>$hb_info['start_time']
+            'start_time'=>$hb_info['start_time']
         );
         $data=json_encode($data);
         Gateway::sendToAll($data);

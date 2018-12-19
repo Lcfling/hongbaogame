@@ -9,10 +9,6 @@
 use GatewayClient\Gateway;
 class TestAction extends CommonAction{
 
-
-
-
-
     public function get_status(){
         $room_id=(int)$_POST['room_id'];
         $fj_info=unserialize( Cac()->get("qz_status_".$room_id));
@@ -26,7 +22,11 @@ class TestAction extends CommonAction{
                 $fj_info['money']="";
                 $fj_info['chang_id']="";
                 $fj_info['start_time']=-1;
-                $fj_info['shangzhuang_money']=300000;
+                // 获取房间数据
+                $room=M('room');
+                $whrer['room_id']=3735277;
+                $room_data=$room->where($whrer)->find();
+                $fj_info['shangzhuang_money']=$room_data['conf_min'];
 
                 Cac()->set("qz_status_".$room_id,serialize($fj_info));
                 $this->ajaxReturn($fj_info,'当前房间数据');
@@ -53,12 +53,6 @@ class TestAction extends CommonAction{
         }
 
     }
-
-
-
-
-
-
 
 
     //  todo 绑定银行卡
@@ -95,7 +89,7 @@ class TestAction extends CommonAction{
 
 
 
-   //抢庄
+    //抢庄
     public function getrob(){
 
         //获取缓存抢庄信息
@@ -108,7 +102,7 @@ class TestAction extends CommonAction{
             $air_time=Cac()->get("qz_airtime_".$room_id);
 
             if (!empty($air_time)){
-             //   echo 20-(time()-$air_time);
+                //   echo 20-(time()-$air_time);
                 if (20-(time()-$air_time)<0){
 
                     $ErbaModel=D('Erba');
@@ -166,12 +160,12 @@ class TestAction extends CommonAction{
 
         if ($fj_info['status'] ==2) {
             $air_time = Cac()->get("qz_airtime_" . $room_id);
-           // echo  60-(time() - $air_time);
+            // echo  60-(time() - $air_time);
             if (60 - (time() - $air_time) < 0) {
                 $chang_id=Cac()->get("qz_chang_id_".$room_id);
 
                 Cac()->del("qztime_".$room_id,time());
-              //  Cac()->del("qz_chang_id_".$room_id);
+                //  Cac()->del("qz_chang_id_".$room_id);
                 // $chang_id=(int)$_POST['chang_id'];
                 //获取下注人数
                 $count=Cac()->get("qz_count_".$room_id);
@@ -242,7 +236,7 @@ class TestAction extends CommonAction{
 
     }
 
-        //自动抢包
+    //自动抢包
     public function zidong(){
 
         //记录当前状态
@@ -255,7 +249,7 @@ class TestAction extends CommonAction{
 
         if ($fj_info['status'] ==3) {
             $air_time = Cac()->get("qz_airtime_" . $room_id);
-           // echo 10 - (time() - $air_time);
+            // echo 10 - (time() - $air_time);
             if (10 - (time() - $air_time) < 0) {
 
                 $zhuang=M('erba_zhuang');
@@ -263,7 +257,7 @@ class TestAction extends CommonAction{
                 $where['chang_id']=$chang_id;
                 $where['is_get']=0;
                 $zhuang_info=$zhuang->where($where)->find();
-              //  print_r($zhuang_info);
+                //  print_r($zhuang_info);
                 if (!empty($zhuang_info)){
 
                     $this->zidong_qb($room_id,$chang_id,$hongbao_id,$zhuang_info['user_id']);
@@ -275,7 +269,7 @@ class TestAction extends CommonAction{
                 $where['chang_id']=$chang_id;
                 $where['is_get']=0;
                 $info=$xiazhu->where($where)->select();
-               // print_r($info);
+                // print_r($info);
                 if (!empty($info)){
                     foreach ($info as $k=>$v){
                         $this->zidong_qb($room_id,$chang_id,$hongbao_id,$info[$k]['user_id']);
@@ -285,7 +279,6 @@ class TestAction extends CommonAction{
 
             }
         }
-
 
     }
 
@@ -355,7 +348,7 @@ class TestAction extends CommonAction{
                 $this->sendnotify_info($room_id,$data);
 
 
-            //    Cac()->del("get_hongbao".$zhuang_info['user_id']);
+                //    Cac()->del("get_hongbao".$zhuang_info['user_id']);
 
 //                foreach ($xiazhu_info as $k=>$v){
 //                    Cac()->del("get_hongbao".$xiazhu_info[$k]['user_id']);
@@ -364,14 +357,18 @@ class TestAction extends CommonAction{
                 $UserModel=D('Users');
                 $usermoney=$UserModel->getusermoney($user_id);
                 if($usermoney<1){
-                  //  Cac()->del("qz_chang_id_".$room_id);
+                    //  Cac()->del("qz_chang_id_".$room_id);
                     //记录当前状态
                     $fj_info['status']=1;
                     $fj_info['nickname']="";
                     $fj_info['money']="";
                     $fj_info['chang_id']="";
                     $fj_info['start_time']=-1;
-                    $fj_info['shangzhuang_money']=300000;
+                    // 获取房间数据
+                    $room=M('room');
+                    $whrer['room_id']=3735277;
+                    $room_data=$room->where($whrer)->find();
+                    $fj_info['shangzhuang_money']=$room_data['conf_min'];
                     Cac()->set("qz_status_".$room_id,serialize($fj_info));
                 }else{
 
@@ -398,7 +395,7 @@ class TestAction extends CommonAction{
 
         $room_id = 3735277;
         $chang_id = Cac()->get("qz_chang_id_" . $room_id);
-       // Cac()->del("qz_chang_id_".$room_id);
+        // Cac()->del("qz_chang_id_".$room_id);
         $fj_info = unserialize(Cac()->get("qz_status_" . $room_id));
 
         if ($fj_info['status'] == 4) {
@@ -464,43 +461,52 @@ class TestAction extends CommonAction{
 
 
 
+    //todo 庄家开奖记录
+    public function kaijiang(){
+        $data= D()->query("select * from  bao_erba_zhuang WHERE num>0 ORDER  by chang_id DESC  limit 10");
+
+        $this->ajaxReturn($data,'庄家开奖记录');
+    }
+
+
+
     public function qz(){
         $room_id=3735277;
-         Cac()->del("qz_user_".$room_id);
+        Cac()->del("qz_user_".$room_id);
         Cac()->del("qztime_".$room_id);
     }
 
-        public function suo()
-        {
-            $num = Cac()->get("rob");
-            echo $num;
-        }
-        public function suo1(){
-            Cac()->del("aaa");
-        }
-        public function kaisuo(){
-            $user_id=6666736;
-            // 判断用户余额
-            $UserModel=D('Users');
-            $usermoney=$UserModel->getusermoney($user_id);
-           echo $usermoney;
-        }
+    public function suo()
+    {
+        $num = Cac()->get("rob");
+        echo $num;
+    }
+    public function suo1(){
+        Cac()->del("aaa");
+    }
+    public function kaisuo(){
+        $user_id=6666736;
+        // 判断用户余额
+        $UserModel=D('Users');
+        $usermoney=$UserModel->getusermoney($user_id);
+        echo $usermoney;
+    }
 
 
     public function zhuang(){
         $user_id=6667022;
-       $data= D()->query("SELECT *,(SELECT num FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_num,(SELECT hb_money FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_money from  bao_erba_xiazhu as a    where user_id=$user_id    order by  a.id desc LIMIT 10 
+        $data= D()->query("SELECT *,(SELECT num FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_num,(SELECT hb_money FROM bao_erba_zhuang where chang_id=a.chang_id)as zhuang_money from  bao_erba_xiazhu as a    where user_id=$user_id    order by  a.id desc LIMIT 10 
 ");
         print_r($data);
     }
 
-public function zhuang1(){
-    $user_id=6667022;
+    public function zhuang1(){
+        $user_id=6667022;
 
-   $data= D()->query("select * from  bao_erba_zhuang WHERE   user_id=$user_id  ORDER  by chang_id DESC  limit 10");
-   $this->ajaxReturn($data,'数组');
+        $data= D()->query("select * from  bao_erba_zhuang WHERE   user_id=$user_id  ORDER  by chang_id DESC  limit 10");
+        $this->ajaxReturn($data,'数组');
 
-}
+    }
     public function zhuang2(){
         $user_id=6667022;
 
@@ -509,12 +515,12 @@ public function zhuang1(){
 
 
 
-    $num=1;
+        $num=1;
 
 
-            if ($num <10){
-                echo "这是点数";
-            }
+        if ($num <10){
+            echo "这是点数";
+        }
 
         if ($num >10 && $num<100){
             echo "这是对子";
@@ -596,7 +602,7 @@ public function zhuang1(){
 
     public function xiazhuang(){
         $room_id=3735277;
-      //  $room_id=(int)$_POST['room_id'];
+        //  $room_id=(int)$_POST['room_id'];
         //记录当前状态
 
         $fj_info['status']=1;

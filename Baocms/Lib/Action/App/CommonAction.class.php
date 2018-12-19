@@ -70,6 +70,9 @@ class CommonAction extends BaseAction {
         if(MODULE_NAME=='Verify'){
             return;
         }
+        if(MODULE_NAME=='Test'){
+            return;
+        }
         if(MODULE_NAME=='Version'){
             return;
         }
@@ -121,4 +124,5 @@ class CommonAction extends BaseAction {
         file_put_contents ( "./syslog.txt", date ( "Y-m-d H:i:s" ) . "  " . $text . "\r\n", FILE_APPEND );
 
     }
+
 }
