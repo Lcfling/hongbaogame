@@ -460,8 +460,6 @@ class ZhifuAction extends CommonAction{
     }
 
 
-
-
     //返回错误
     function jsonError($message = '',$url=null)
     {
@@ -481,20 +479,6 @@ class ZhifuAction extends CommonAction{
         $return['url'] = $url;
         return json_encode($return);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
