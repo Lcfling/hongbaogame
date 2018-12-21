@@ -21,148 +21,13 @@ class ZhifuAction extends CommonAction{
         );
     }
 
+
+
     public function index(){
 
-        $money=(int)$_POST['money'];  //支付金额
-        //$this->ajaxReturn(null,"支付维护5分钟",0);
-        $user_id=$this->uid;  //用户id
-        if ($money == "" || $user_id == ""){
-            $this->ajaxReturn(null,"数据异常请检查!",0);
-        }
-        if ($money <50){
-            $this->ajaxReturn(null,"数据异常请检查!",0);
-        }
-
-        //商户订单号
-        $mchOrderNo = $user_id.time().rand(1000,9999);
-
-        $appId = "18121517331745056";//商户ID
-        $user = "qingpeng";    //用户名
-        $orderNo = $mchOrderNo;//订单号
-        $amount = $money; //订单金额
-        $timestamp = time() * 1000; // 时间戳
-        $md5Key = "ekQcG8puSbmXdtiemBBdlaCGWeYBEgdUWpYnWqEghLfejpVSWpZCLJvO50pbL9hu";//签名
-
-        $noticeUrl = "http://notify.6q1s1.com/app/zhifu/noticeUrl_1216";//回调地址
-        //拼接请求地址
-        $url = "http://api.ngjmr.cn/order/create?appId=" . $appId;
-        $url .= "&user=$user";
-        $url .= "&orderNo=$orderNo";
-        $url .= "&timestamp=$timestamp";
-        $url .= "&money=$amount";
-        $url .= "&noticeUrl=" . urlencode($noticeUrl);
-        $url .= "&sign=" . md5("$appId^$user^$orderNo^$amount^$timestamp^$md5Key");
-
-        header("Content-Type: text/html;charset=utf-8");
-        //  echo "sign=md5($appId^$user^$orderNo^$amount^$timestamp^$md5Key)";
-        // echo "<hr />";
-        //echo htmlspecialchars($url);
-        //  echo "<hr />";
-
-        $data=json_decode(file_get_contents($url),true);
-
-        if ($data['result'] == 'success'){
-
-            $order=M('order');
-            $data1['user_id']=$user_id;
-            $data1['out_trade_no']=$orderNo;
-            $data1['total_amount']=$amount*100;
-            $data1['subject']='用户充值';
-            $data1['notify_time']=time();
-            $data1['status']='0';
-            $data1['zhifubao']=5;
-
-            $order->add($data1);
-
-            $re['url']=$data['data']['qrCode'];
-            $this->ajaxReturn($re,'充值链接');
-
-        }
-
-    }
-    public function noticeUrl_1216(){
-        $appId=$_GET['appId'];  // 商户ID
-        $user=$_GET['user'];  //用户名
-        $order_no=$_GET['order_no']; //支付订单号
-
-        $out_order_no=$_GET['out_order_no']; //	商户自己的订单号
-        $trade_money=$_GET['trade_money'];   // 交易金额（支付金额）
-        $trade_time=$_GET['trade_time'];   //  支付时间
-
-        $rebate=$_GET['rebate'];    //税点
-        $rebate_money=$_GET['rebate_money'];   //税费
-        $sign=$_GET['sign'];  //加密签名
-
-        $md5Key = "ekQcG8puSbmXdtiemBBdlaCGWeYBEgdUWpYnWqEghLfejpVSWpZCLJvO50pbL9hu";//签名
-        $signs=md5("$appId^$user^$order_no^$out_order_no^$trade_time^$md5Key");
-
-
-        if ($sign == $signs){
-            // 保存
-
-//            $myfile = fopen("newfile1218.txt", "w") or die("Unable to open file!");
-//            fwrite($myfile, $order_no);
-//            fclose($myfile);
-
-
-            $order=M('order');
-            $where['out_trade_no']=$out_order_no;
-            $save['status']=1;
-            $order->where($where)->save($save);
-            $user_info=$order->where($where)->find();
-
-            $paid=M('Paid');
-            $where1['order_id']=$out_order_no;
-            $list=$paid->where($where1)->find();
-
-            if (!$list){
-                $info['order_id']=$out_order_no;
-                $info['money']=$trade_money*100;
-                $info['user_id']=$user_info['user_id'];
-                $info['creatime']=time();
-                $info['type']=1;
-                $info['remark']='支付宝充值';
-                $info['is_afect']=1;
-                $paid->add($info);
-            }
-
-
-
-        }
-
-        echo "success";
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function zhifu(){
-
 
         $money=(int)$_POST['money'];  //支付金额
-
+        //$this->ajaxReturn($re,'充值维护',0);
         $user_id=$this->uid;  //用户id
 
         if ($money == "" || $user_id == ""){
@@ -178,25 +43,27 @@ class ZhifuAction extends CommonAction{
 
 
         $data["mchId"] = '20000001';//商户ID
-        $data["appId"] = "33ae61f1ec604c808701347e02291a61";//appid
-        $data["productId"]=8017;//支付方式
+        $data["appId"] = "a639644736494ec6b3cc4a3084f97963";//appid
+        $data["productId"]=8018;//支付方式
         $data["mchOrderNo"] = $mchOrderNo;//订单号
         $data["currency"] = "cny";//币种
 
         $data["amount"] = $money*100;//分开始 额度
-        $data["notifyUrl"] = "http://hongbao.webziti.com/app/zhifu/notifyUrl";//回调
-        $data["subject"] = "用户充值";//产品主题
-        $data["body"] = "用户充值";//产品描述
+        $data["notifyUrl"] = "http://notify.6q1s1.com/app/zhifu/notifyUrl";//回调
+        $data["subject"] = "餐饮";//产品主题
+        $data["body"] = "餐饮";//产品描述
         $data["extra"] = '{"timeout_express":"10m"}';//该笔订单允许的最晚付款时间
         $data["sign"] =$this->getSign($data);//签名
 
-        $url = "http://47.244.129.122:3020/api/pay/create_order";
+        $url = "http://www.bluewhalepay.com:3020/api/pay/create_order";
         $data = json_encode($data);
         $params['params']=$data;
         $result = $this->https_post_kf($url,$params);
-        $final = json_decode($result);
+        $final = json_decode($result,true);
+        ///print_r($final);
 
-        if ($final->retCode == "SUCCESS"){
+
+        if ($final['retCode'] == "SUCCESS"){
 
             $order=M('order');
             $data1['user_id']=$user_id;
@@ -208,10 +75,9 @@ class ZhifuAction extends CommonAction{
             $data1['zhifubao']=3;
 
             $order->add($data1);
-            $data_url= parse_url($final->payParams->payUrl);
-            $url=$this->convertUrlQuery($data_url['query']);
-            $re['url']=$url['params'];
-            print_r($re);
+
+            $re['url']=$final['payParams']['payUrl'];
+
             $this->ajaxReturn($re,'充值链接');
         }
 
@@ -243,6 +109,7 @@ class ZhifuAction extends CommonAction{
         $data['channelOrderNo']=$channelOrderNo;
 
         $signs=$this->getSign($data);
+
         if ($sign == $signs ){
             if ($status  == 2){
                 $order=M('order');
@@ -338,20 +205,21 @@ class ZhifuAction extends CommonAction{
     }
 
 
-    public function xinzhifu(){
+    public function indextemp(){
 
 
         $money=(int)$_POST['money'];  //支付金额
         // $money=0.01;
         $user_id=$this->uid;  //用户id
         //$user_id=6667022;
+        //$this->ajaxReturn(null,"支付维护5分钟",0);
         if ($money == "" || $user_id == ""){
             $this->ajaxReturn(null,"数据异常请检查!",0);
         }
         if ($money <50){
             $this->ajaxReturn(null,"数据异常请检查!",0);
         }
-        $money=$money+rand(1,5);
+        //$money=$money+rand(1,5);
 
         //商户订单号
         $mchOrderNo = $user_id.time().rand(1000,9999);
@@ -373,7 +241,7 @@ class ZhifuAction extends CommonAction{
         $uid = "71";//"此处填写平台的uid";
         $token = "17261f17e666507c7adde8882c698887";//"此处填写平台的Token";
         $return_url = 'http://ad.yiaigo.com/zfb3f/1214/payreturn.php';
-        $notify_url = 'http://hongbao.webziti.com/app/zhifu/paynotify';
+        $notify_url = 'http://notify.6q1s1.com/app/zhifu/paynotify';
 
         $key = md5($goodsname. $istype . $notify_url . $orderid . $orderuid . $price . $return_url . $token . $uid);
         //经常遇到有研发问为啥key值返回错误，大多数原因：1.参数的排列顺序不对；2.上面的参数少传了，但是这里的key值又带进去计算了，导致服务端key算出来和你的不一样。
@@ -392,10 +260,11 @@ class ZhifuAction extends CommonAction{
         $url = "https://www.500epay.com/pay?format=json";
 
         $result = $this->https_post_kf($url,$returndata);
+
         $final = json_decode($result);
 
         if ($final->code == 1){
-            $order=M('order');
+            $order=D('Order');
             $data1['user_id']=$user_id;
             $data1['out_trade_no']=$mchOrderNo;
             $data1['total_amount']=$money*100;
@@ -409,6 +278,8 @@ class ZhifuAction extends CommonAction{
             $re['url']=$final->data->qrcode;
 
             $this->ajaxReturn($re,'充值链接');
+        }else{
+            $this->ajaxReturn(null,"支付维护5分钟".var_export($final,true),0);
         }
     }
 
@@ -460,6 +331,8 @@ class ZhifuAction extends CommonAction{
     }
 
 
+
+
     //返回错误
     function jsonError($message = '',$url=null)
     {
@@ -506,7 +379,7 @@ class ZhifuAction extends CommonAction{
         $String =$this->formatBizQueryParaMap($Parameters, false);
         //echo '【string1】'.$String.'</br>';
         //签名步骤二：在string后加入KEY
-        $String = $String."&key=".'INIMNJGNPZ00ZKEIUNTQL3FBE411OWWFRRZPXXPD6C0JGMXRN3XG1EHAYWBHMX72VUMGUHV5WB3J3XJPC1ZXBTRVQV6MDORR8EN1WAPMDLYD1VFH2BSOYD04WTNMEBDN';
+        $String = $String."&key="."HSWRKJG5VS09QBBHKMNRZSGMVIA8XAU6NHNORNJXAAKH5ETETSLKAUHVICGNZVXWQG5ZIJENERXNJPP44DEBHTAMCEKA9TVDNLYSY1BFG22IE3PLJI5QM55DGRSXUC6E";
         //echo "【string2】".$String."</br>";
         //签名步骤三：MD5加密
         $String = md5($String);
@@ -606,7 +479,7 @@ class ZhifuAction extends CommonAction{
 
     }
 
-    public function index_bk(){
+    /*public function index(){
 
         // 用户id
         $user_id=$this->uid;
@@ -637,7 +510,7 @@ class ZhifuAction extends CommonAction{
         $re['url']="https://www.dhwangluo.top/zfbtest/zfbpay/wappay/pay.php?order_id=".$customer_order_no."&money=".$money;
         $this->ajaxReturn($re,'充值链接');
 
-    }
+    }*/
 
 
 
