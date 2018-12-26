@@ -24,7 +24,8 @@ class SzwwAction extends CommonAction{
         $roomid = (int)$_a['roomid'];
         $hongbaomoney = 88*$num;
         //含冻结金额，不翻倍
-        $totalmoney = $money*($num-1)+$hongbaomoney;
+        $freezemoney = $money*($num-1);
+        $totalmoney = $hongbaomoney +$freezemoney;
         $users =   D('Users');
         $szwwsend = D("Szwwsend");
 
@@ -58,7 +59,8 @@ class SzwwAction extends CommonAction{
             //解锁
             $szwwsend->opensendbaoLock($this->uid);
             //将发红包的冻结金额存表
-            D('Users')->reducemoney($this->uid,$totalmoney,71,1,'胜者为王发送红包（含冻结金额）');
+            D('Users')->reducemoney($this->uid,$hongbaomoney,70,1,'胜者为王发送红包');
+            D('Users')->reducemoney($this->uid,$freezemoney,71,1,'胜者为王冻结金额');
             //通知
             $this->sendnotify($hongbao_info,$this->member);
             $this->ajaxReturn('','发送完毕!',1);
