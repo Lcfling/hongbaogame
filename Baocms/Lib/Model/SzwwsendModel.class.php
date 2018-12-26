@@ -6,8 +6,6 @@ use GatewayClient\Gateway;
 
 class SzwwsendModel extends CommonModel{
 
-
-
     /**大红包已被领取多少个小红包，共多少个红包
      * @param $hongbao_id 大红包id
      * @return $getlist 数组 小红包所有已领取数据
@@ -95,7 +93,8 @@ class SzwwsendModel extends CommonModel{
         $szwwget = D("Szwwget");
         $hb_id = $hbinfo['id'];
         $getmoneytotal = $szwwget->where("hb_id = $hb_id and user_id > 0")->sum('money');
-        $money = $hbinfo['money']*($hbinfo['num'] - 1) + 88*$hbinfo['num'] - $getmoneytotal;
+        $money[1] =  88*$hbinfo['num'] - $getmoneytotal;
+        $money[2] = $hbinfo['money']*($hbinfo['num'] - 1);
         return $money;
     }
 
