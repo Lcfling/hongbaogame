@@ -10,7 +10,6 @@ class SzwwsendModel extends CommonModel{
 
     /**大红包已被领取多少个小红包，共多少个红包
      * @param $hongbao_id 大红包id
-
      * @return $getlist 数组 小红包所有已领取数据
      */
     public function szwwgetlistnum($hongbao_id){
