@@ -35,15 +35,20 @@ class SzwwAction extends CommonAction{
             $this->ajaxReturn('','频繁操作',0);
         }
 
-//        $roomData=D('Room')->getRoomData($roomid);
-//        if(empty($roomData)){
-//            D('Hongbao')->opensendbaoLock($this->uid);
-//            $this->ajaxReturn('','房间不存在!',0);
-//        }
-//        //金额判断
+        $roomData=D('Room')->getRoomData($roomid);
+        if(empty($roomData)){
+            $szwwsend->opensendbaoLock($this->uid);
+            $this->ajaxReturn('','房间不存在!',0);
+        }
+        //金额判断
 //        if($money>$roomData['conf_max']||$money<$roomData['conf_min']){
-//            D('Hongbao')->opensendbaoLock($this->uid);
+//            $szwwsend->opensendbaoLock($this->uid);
 //            $this->ajaxReturn('','请选择正确的金额 '.$roomData['conf_min'].'-'.$roomData['conf_max'],0);
+//        }
+        //红包个数判断
+//        if($num>100||$num<4){
+//            $szwwsend->opensendbaoLock($this->uid);
+//            $this->ajaxReturn('','请选择正确的金额 4-100',0);
 //        }
 
         //余额判断判断
@@ -59,8 +64,8 @@ class SzwwAction extends CommonAction{
             //解锁
             $szwwsend->opensendbaoLock($this->uid);
             //将发红包的冻结金额存表
-            D('Users')->reducemoney($this->uid,$hongbaomoney,70,1,'胜者为王发送红包');
-            D('Users')->reducemoney($this->uid,$freezemoney,71,1,'胜者为王冻结金额');
+            D('Users')->reducemoney($this->uid,$hongbaomoney,70,1,'发送红包（胜者）');
+            D('Users')->reducemoney($this->uid,$freezemoney,71,1,'发包冻结（胜者）');
             //通知
             $this->sendnotify($hongbao_info,$this->member);
             $this->ajaxReturn('','发送完毕!',1);
@@ -175,7 +180,7 @@ class SzwwAction extends CommonAction{
 
         $money = $kickback_info['money'];
         //抢的红包入paid表
-        $users->addmoney($uid, $money, 5, 1, "胜者为王领红包");
+        $users->addmoney($uid, $money, 5, 1, "领红包（胜者）");
         if($status==1){
             //1 平民进来 2庄家进来
             //与庄家赔付
