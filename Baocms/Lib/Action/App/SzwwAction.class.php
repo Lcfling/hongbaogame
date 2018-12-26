@@ -153,6 +153,8 @@ class SzwwAction extends CommonAction{
             //将列表第一个小红包移除队列并返回小红包id
             $kickback_id=$szwwsend->getOnekickid($hongbao_id);
             if($kickback_id>0){
+                //闲家抢包冻结
+                D('Users')->reducemoney($this->uid,$hongbao_info['money'],71,1,'抢包冻结（胜者）');
                 //闲家领包处理
                 $this->zjpmreceive($hongbao_id,$kickback_id,$this->uid,$hongbao_info,1);
             }else{
