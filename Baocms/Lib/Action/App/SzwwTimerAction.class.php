@@ -55,8 +55,11 @@ class SzwwTimerAction extends Action{
         $users =   D('Users');
         $money = $szwwsend->zjpaymoney($hbinfo);
         //file_put_contents('./token.txt','money'.$money.PHP_EOL,FILE_APPEND);
-        $users->addmoney($hbinfo['user_id'],$money[1],72,$is_afect=1,'胜者为王庄家红包返还',$order_id=0);
-        $users->addmoney($hbinfo['user_id'],$money[2],73,$is_afect=1,'胜者为王庄家红包解冻',$order_id=0);
+        $users->addmoney($hbinfo['user_id'],$money[2],73,$is_afect=1,'发包解冻（胜者）',$order_id=0);
+        $users->addmoney($hbinfo['user_id'],$money[3],74,$is_afect=1,'结算（胜者）',$order_id=0);
+        if($money[1] > 0){
+            $users->addmoney($hbinfo['user_id'],$money[1],72,$is_afect=1,'发包返还（胜者）',$order_id=0);
+        }
 
     }
     /**返佣扣除庄家赢得金额
@@ -73,7 +76,7 @@ class SzwwTimerAction extends Action{
         $fymoney =$getmoneytotal * 0.05;
         if($getmoneytotal>0){
             //扣除闲家赢得钱
-            $users->reducemoney($uid,$fymoney,81,$is_afect=1,'胜者为王扣除的返佣金额',$order_id=0);
+            $users->reducemoney($uid,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
             //闲家的返佣
             $szwwfy->fanyong($uid,$fymoney,'szww');
 
