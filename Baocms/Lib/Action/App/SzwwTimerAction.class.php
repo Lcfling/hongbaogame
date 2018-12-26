@@ -54,10 +54,9 @@ class SzwwTimerAction extends Action{
         $szwwsend = D("Szwwsend");
         $users =   D('Users');
         $money = $szwwsend->zjpaymoney($hbinfo);
-        $type = '72';
-        $remark = '胜者为王庄家红包解冻（减去领取的红包）';
         //file_put_contents('./token.txt','money'.$money.PHP_EOL,FILE_APPEND);
-        $users->addmoney($hbinfo['user_id'],$money,$type,$is_afect=1,$remark,$order_id=0);
+        $users->addmoney($hbinfo['user_id'],$money[1],72,$is_afect=1,'胜者为王庄家红包返还',$order_id=0);
+        $users->addmoney($hbinfo['user_id'],$money[2],73,$is_afect=1,'胜者为王庄家红包解冻',$order_id=0);
 
     }
     /**返佣扣除庄家赢得金额
