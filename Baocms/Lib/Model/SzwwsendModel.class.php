@@ -41,32 +41,30 @@ class SzwwsendModel extends CommonModel{
         //获取大红包信息
         $szwwbigbao = unserialize(Cac()->get('szww_send_'.$hongbao_id)) ;
 
-        $zjuid = $szwwbigbao['user_id'];
         $money =$szwwbigbao['money'];
         $type = '8';
         $remark='金额赔付（胜者）';
         $fymoney = $money*0.05;
         if($szwwzjsmallbao['money']>= $szwwsmallbao['money']){
-
-
             //闲赔记录表
-            $users->reducemoney($uid,$money,$type,$is_afect=1,$remark,$order_id=0);
-            //庄赢记录表
-            //$users->addmoney($zjuid,$money,$type,$is_afect=1,$remark,$order_id=0);
+            //$users->reducemoney($uid,$fymoney,$type,$is_afect=1,$remark,$order_id=0);
             //闲赔记录小红包szwwget表格
             $this->paymoney($szwwsmallbao,$kickback_id,-$money);
 
+            Cac()->set('szww_paymoney_'.$hongbao_id.$uid,-$money);
+
         }else{
-            //庄赔记录表
-            //$users->reducemoney($zjuid,$money,$type,$is_afect=1,$remark,$order_id=0);
+
             //闲赢记录表
-            $users->addmoney($uid,$money,$type,$is_afect=1,$remark,$order_id=0);
+            //$users->addmoney($uid,$money,$type,$is_afect=1,$remark,$order_id=0);
             //闲赢记录小红包szwwget表格
             $this->paymoney($szwwsmallbao,$kickback_id,$money);
+            //存入缓存
+            Cac()->set('szww_paymoney_'.$hongbao_id.$uid,$money);
             //扣除闲家赢得钱
-            $users->reducemoney($uid,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
+            //$users->reducemoney($uid,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
             //闲家的返佣
-            D('Szwwfy')->fanyong($uid,$fymoney,'szww');
+            //D('Szwwfy')->fanyong($uid,$fymoney,'szww');
         }
 
     }
@@ -95,7 +93,6 @@ class SzwwsendModel extends CommonModel{
         $getmoneytotal = $szwwget->where("hb_id = $hb_id and user_id > 0")->sum('money');
         $money[1] =  88*$hbinfo['num'] - $getmoneytotal;
         $money[2] = $hbinfo['money']*($hbinfo['num'] - 1);
-        $money[3] = $getmoneytotal;
         return $money;
     }
 
