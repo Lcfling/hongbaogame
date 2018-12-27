@@ -1,6 +1,6 @@
 <?PHP
 
-class JyfanyongModel extends CommonModel{
+class SzwwfyModel extends CommonModel{
 
 
 
