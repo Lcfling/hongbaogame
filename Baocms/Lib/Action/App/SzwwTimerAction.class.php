@@ -77,8 +77,11 @@ class SzwwTimerAction extends Action{
         $hb_id = $hb['id'];
         $uid =$hb['user_id'];
         $getmoneytotal = $szwwget->where("hb_id = $hb_id and user_id > 0")->sum('paymoney');
-        //结算庄家金额
-        $users->addmoney($hb['user_id'],-$getmoneytotal,74,$is_afect=1,'结算（胜者）',$order_id=0);
+        if($getmoneytotal!=0){
+            //结算庄家金额
+            $users->addmoney($hb['user_id'],-$getmoneytotal,74,$is_afect=1,'结算（胜者）',$order_id=0);
+        }
+
         if(-$getmoneytotal>0){
             //玩家盈利抽取5%
             $fymoney =-$getmoneytotal * 0.05;
