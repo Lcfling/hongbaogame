@@ -11,22 +11,24 @@ class SzwwTimerAction extends Action{
     public function  zjgethongbao(){
        $data =  $_GET;
        if($data['token']=='3acf16259def65456fc2a68ab5e10d96'){
-          // echo "进入定时器";
+           //echo "进入定时器";
            $szwwsend = D("Szwwsend");
            //获取该房间未结束的红包
             $unfinishedlist =  $szwwsend->where(array("roomid"=>$data['roomid'],'is_freeze'=>0))->select();
+
             foreach ($unfinishedlist as $k=>$v){
                 $timecha=time() - 60;
                 if($v['is_over']==1 || $v['creatime']<$timecha){
-
                     $hbinfo = unserialize(Cac()->get("szww_send_".$v['id']));
 
                     //设置mysql红包为领取状态为完毕并改庄家解冻状态
                     $hbfinishedstatus =  $this->unfreeze($v['id']);
-                   // 庄家发的红包的剩余金额和冻结金额的返还
+                    // 庄家发的红包的剩余金额和冻结金额的返还
                     $this->zjmoneyback($hbinfo);
+
                     //返佣扣除庄家赢得金额，结算金额入库
                     $this->zjfypay($hbinfo);
+
                     //闲家赔付入库
                     $this->xjfypay($hbinfo);
                     //将领取的结算结果发送给房间所有人
@@ -75,13 +77,13 @@ class SzwwTimerAction extends Action{
         $hb_id = $hb['id'];
         $uid =$hb['user_id'];
         $getmoneytotal = $szwwget->where("hb_id = $hb_id and user_id > 0")->sum('paymoney');
-        //结算扣除庄家金额
-        $users->addmoney($hb['user_id'],$getmoneytotal,74,$is_afect=1,'结算（胜者）',$order_id=0);
-        //玩家盈利抽取5%
-        $fymoney =$getmoneytotal * 0.05;
-        if($getmoneytotal>0){
+        //结算庄家金额
+        $users->addmoney($hb['user_id'],-$getmoneytotal,74,$is_afect=1,'结算（胜者）',$order_id=0);
+        if(-$getmoneytotal>0){
+            //玩家盈利抽取5%
+            $fymoney =-$getmoneytotal * 0.05;
 
-            //扣除闲家赢得钱
+            //扣除庄家赢得钱
             $users->reducemoney($uid,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
             //闲家的返佣
             $szwwfy->fanyong($uid,$fymoney,'szww');
@@ -96,22 +98,30 @@ class SzwwTimerAction extends Action{
         $users =   D('Users');
         $hb_id = $hb['id'];
         $type = '8';
+        $zjuid =$hb['user_id'];
         $remark='金额赔付（胜者）';
         $uids = Cac()->lRange('szwwback_user_'.$hb_id,0,-1);
+
         foreach ($uids as $v){
-            $money= Cac()->get('szww_paymoney_'.$hb_id.$v);
-            //闲家抢包解冻
-            $users->addmoney($v,$hb['money'],73,$is_afect=1,'抢包解冻（胜者）',$order_id=0);
-            //闲家赔付记录表
-            $users->addmoney($v,$money,$type,$is_afect=1,$remark,$order_id=0);
-            if($money>0){
-                //闲家盈利抽取5%
-                $fymoney = $money*0.05;
-                //扣除闲家赢得钱
-                $users->reducemoney($v,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
-                //闲家的返佣
-                $szwwfy->fanyong($v,$fymoney,'szww');
+           // print_r($v);
+            if($v != $zjuid){
+                $money= Cac()->get('szww_paymoney_'.$hb_id.$v);
+
+                //闲家抢包解冻
+                $users->addmoney($v,$hb['money'],73,$is_afect=1,'抢包解冻（胜者）',$order_id=0);
+                //闲家赔付记录表
+                $users->addmoney($v,$money,$type,$is_afect=1,$remark,$order_id=0);
+                if($money>0){
+                    //闲家盈利抽取5%
+                    $fymoney = $money*0.05;
+
+                    //扣除闲家赢得钱
+                    $users->reducemoney($v,$fymoney,81,$is_afect=1,'盈利扣除（胜者）',$order_id=0);
+                    //闲家的返佣
+                    $szwwfy->fanyong($v,$fymoney,'szww');
+                }
             }
+
 
         }
 
