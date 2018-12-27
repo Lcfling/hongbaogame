@@ -125,6 +125,7 @@ class SzwwAction extends CommonAction{
         $hongbao_id=(int)$_POST['hongbao_id'];//红包id
         $users =   D('Users');
         $szwwsend = D("Szwwsend");
+
         //获取大红包数据
         $hongbao_info=$szwwsend->getInfoById($hongbao_id);
         if(empty($hongbao_info)){
